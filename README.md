@@ -3,6 +3,8 @@
 [![CI](https://github.com/padilhars/vibe-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/padilhars/vibe-docs/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/padilhars/vibe-docs)](https://github.com/padilhars/vibe-docs/releases/latest)
 
+**[padilhars.github.io/vibe-docs](https://padilhars.github.io/vibe-docs/)**
+
 Skill do Claude que transforma uma ideia de sistema em documentação estruturada e rastreável, pronta para orientar desenvolvimento assistido por IA (*vibe coding*) no Claude Code.
 
 > Você traz o problema e a ideia. A skill conduz a descoberta, consolida tudo num `PROJECT.md` — a fonte única de verdade — e projeta dele até 21 documentos especializados, terminando num `CLAUDE.md` que o Claude Code carrega sozinho.

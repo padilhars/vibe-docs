@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vibe-Docs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Skill do Claude que transforma uma ideia de sistema em um PROJECT.md rastreável e até 21 documentos prontos para o Claude Code.">
+<meta property="og:title" content="Vibe-Docs — decida antes de codar">
+<meta property="og:description" content="Descoberta guiada, um Blueprint como fonte única de verdade e documentação verificável por script, do PRD ao CLAUDE.md.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,500..800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: uma prancha técnica. Grade de desenho ao fundo, conteúdo em colunas
+   alinhadas à malha, e um carimbo (legenda) cuja revisão é a versão do Blueprint.
+   Claro = papel vegetal com tinta azul; escuro = cianotipia. */
+:root {
+  --paper: #f2f5f7;
+  --sheet: #fbfcfd;
+  --ink: #142a40;
+  --ink-soft: #4a5f73;
+  --line: #c9d5df;
+  --grid: rgba(31, 79, 168, 0.07);
+  --accent: #1f4fa8;
+  --accent-ink: #ffffff;
+  --term-bg: #0f1e2e;
+  --term-fg: #d6e2ec;
+  --ok: #1d7a4c; --warn: #a76a00; --info: #2a62c9; --bad: #b3261e;
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d2340; --sheet: #112b4d; --ink: #eaf2fb; --ink-soft: #a9bfd6;
+    --line: #2c4d75; --grid: rgba(190, 220, 255, 0.08); --accent: #8fc1ff; --accent-ink: #0b1d33;
+    --term-bg: #081628; --term-fg: #d6e2ec;
+    --ok: #5fd39a; --warn: #f3b74f; --info: #8fc1ff; --bad: #ff8a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d2340; --sheet: #112b4d; --ink: #eaf2fb; --ink-soft: #a9bfd6;
+  --line: #2c4d75; --grid: rgba(190, 220, 255, 0.08); --accent: #8fc1ff; --accent-ink: #0b1d33;
+  --term-bg: #081628; --term-fg: #d6e2ec;
+  --ok: #5fd39a; --warn: #f3b74f; --info: #8fc1ff; --bad: #ff8a80;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+code, pre, .mono { font-family: var(--mono); }
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Barra superior */
+.top { padding-block: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand { font: 800 1.05rem/1 var(--display); font-stretch: 125%; letter-spacing: 0.02em; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.brand svg { flex: none; }
+.top nav { display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.top nav a { color: var(--ink-soft); text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; padding-block: 48px 72px; }
+.eyebrow { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 20px; }
+h1 {
+  font: 800 clamp(2.6rem, 6.4vw, 4.6rem)/0.98 var(--display);
+  font-stretch: 118%;
+  letter-spacing: -0.015em;
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 34em; margin: 0 0 32px; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 20px; border-radius: 3px;
+  font: 600 0.95rem/1 var(--body); text-decoration: none; border: 1.5px solid var(--accent);
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { color: var(--ink); border-color: var(--line); background: var(--sheet); }
+.btn-ghost:hover { border-color: var(--ink-soft); }
+.meta-line { font: 400 0.8rem/1.4 var(--mono); color: var(--ink-soft); margin-top: 16px; }
+
+/* Prancha com carimbo */
+.sheet {
+  background: var(--sheet);
+  border: 1.5px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--line);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  min-width: 0;
+}
+.sheet-body { padding: 18px 20px; overflow-x: auto; }
+.sheet-body pre { margin: 0; white-space: pre; color: var(--ink); }
+.k { color: var(--ink-soft); }
+.id { color: var(--accent); font-weight: 500; }
+.carimbo { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1.5px solid var(--ink); }
+.carimbo div { padding: 8px 12px; border-right: 1px solid var(--line); min-width: 0; }
+.carimbo div:last-child { border-right: 0; }
+.carimbo .wide { grid-column: span 3; border-right: 0; border-bottom: 1px solid var(--line); }
+.carimbo small { display: block; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.carimbo strong { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Seções */
+section { padding-block: 72px; border-top: 1px solid var(--line); }
+.sec-head { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 40px; margin-bottom: 40px; }
+.sec-label { font: 500 0.75rem/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); padding-top: 10px; }
+h2 { font: 800 clamp(1.8rem, 3.6vw, 2.6rem)/1.05 var(--display); font-stretch: 112%; margin: 0 0 14px; text-wrap: balance; }
+.sec-head p { margin: 0; color: var(--ink-soft); max-width: 38em; }
+
+/* Problema */
+.problem { font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.4; max-width: 30em; margin: 0; text-wrap: pretty; }
+.problem strong { font-weight: 600; }
+
+/* Etapas */
+.stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1.5px solid var(--ink); background: var(--sheet); }
+.stage { padding: 24px; border-right: 1px solid var(--line); display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; min-width: 0; }
+.stage:last-child { border-right: 0; }
+.stage-n { font: 500 0.75rem/1 var(--mono); color: var(--accent); letter-spacing: 0.08em; }
+.stage h3 { font: 800 1.5rem/1 var(--display); font-stretch: 112%; margin: 0; }
+.stage p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+.say { font: 400 0.82rem/1.5 var(--mono); border-top: 1px dashed var(--line); padding-top: 12px; color: var(--ink); }
+.say span { display: block; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 4px; }
+
+/* Checkpoint */
+.check { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.cat { background: var(--sheet); border: 1px solid var(--line); border-top: 4px solid var(--c); padding: 18px; min-width: 0; }
+.cat h3 { margin: 0 0 4px; font: 700 1rem/1.2 var(--display); font-stretch: 112%; display: flex; gap: 8px; align-items: center; }
+.cat .rule { margin: 0 0 14px; font-size: 0.85rem; color: var(--ink-soft); }
+.cat ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 0.9rem; }
+.cat li { padding-left: 12px; border-left: 2px solid var(--line); }
+.cat .tag { font: 500 0.72rem/1 var(--mono); color: var(--c); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* Terminal */
+.split { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
+.points { display: grid; gap: 22px; margin: 0; padding: 0; list-style: none; }
+.points li { display: grid; gap: 4px; }
+.points strong { font: 700 1.05rem/1.3 var(--display); font-stretch: 112%; }
+.points span { color: var(--ink-soft); font-size: 0.95rem; }
+.term { background: var(--term-bg); color: var(--term-fg); border-radius: 4px; min-width: 0; overflow: hidden; border: 1px solid var(--line); }
+.term-bar { display: flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); font: 400 0.72rem/1 var(--mono); color: #8aa1b8; align-items: center; }
+.term-bar i { width: 9px; height: 9px; border-radius: 50%; background: #2c4058; display: inline-block; }
+.term-bar b { font-weight: 400; margin-left: 8px; }
+.term pre { margin: 0; padding: 18px; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; }
+.t-cmd { color: #ffffff; }
+.t-red { color: #ff8a80; }
+.t-dim { color: #8aa1b8; }
+.t-id { color: #8fc1ff; }
+
+/* Documentos */
+.docs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1.5px solid var(--ink); background: var(--sheet); }
+.docs > div { padding: 20px; border-right: 1px solid var(--line); min-width: 0; }
+.docs > div:last-child { border-right: 0; }
+.docs h3 { margin: 0 0 12px; font: 500 0.72rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.docs ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 0.92rem; }
+.docs li.final { font-weight: 600; color: var(--accent); }
+
+/* Handoff */
+.claude-md { background: var(--sheet); border: 1.5px solid var(--ink); min-width: 0; }
+.claude-md .fname { font: 500 0.75rem/1 var(--mono); padding: 10px 16px; border-bottom: 1px solid var(--line); color: var(--ink-soft); display: flex; justify-content: space-between; gap: 12px; }
+.claude-md pre { margin: 0; padding: 16px; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; color: var(--ink); }
+.claude-md .h { color: var(--accent); font-weight: 500; }
+
+/* Instalação */
+.tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--ink); margin-bottom: 24px; flex-wrap: wrap; }
+.tab {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  padding: 12px 18px; font: 600 0.95rem/1 var(--body); color: var(--ink-soft);
+  border-bottom: 3px solid transparent; margin-bottom: -1.5px;
+}
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; counter-reset: s; max-width: 44em; }
+.steps li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; align-items: start; counter-increment: s; }
+.steps li::before { content: counter(s); font: 700 0.9rem/34px var(--mono); width: 34px; height: 34px; text-align: center; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--sheet); }
+.steps li > div { min-width: 0; padding-top: 5px; }
+.cmd { display: flex; align-items: stretch; margin-top: 10px; background: var(--term-bg); border-radius: 3px; overflow: hidden; }
+.cmd pre { margin: 0; padding: 12px 14px; color: var(--term-fg); font-size: 0.8rem; overflow-x: auto; flex: 1; min-width: 0; }
+.copy { appearance: none; border: 0; border-left: 1px solid rgba(255,255,255,0.1); background: transparent; color: #8fc1ff; font: 500 0.78rem/1 var(--mono); padding: 0 14px; cursor: pointer; flex: none; }
+.copy:hover { color: #ffffff; }
+
+/* Rodapé */
+footer { border-top: 1.5px solid var(--ink); padding-block: 32px 48px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 0.88rem; color: var(--ink-soft); }
+footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .hero, .split, .sec-head { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .check { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .docs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .docs > div { border-bottom: 1px solid var(--line); }
+  .docs > div:nth-child(2n) { border-right: 0; }
+  .docs > div:last-child { grid-column: span 2; border-bottom: 0; }
+  .sec-head { margin-bottom: 28px; }
+  .sec-label { padding-top: 0; }
+}
+@media (max-width: 640px) {
+  .stages { grid-template-columns: minmax(0, 1fr); }
+  .stage { border-right: 0; border-bottom: 1px solid var(--line); }
+  .stage:last-child { border-bottom: 0; }
+  .check { grid-template-columns: minmax(0, 1fr); }
+  .docs { grid-template-columns: minmax(0, 1fr); }
+  .docs > div, .docs > div:nth-child(2n) { border-right: 0; }
+  .docs > div:last-child { grid-column: auto; }
+  section { padding-block: 56px; }
+  .hero { padding-block: 24px 56px; }
+  .top nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="wrap top">
+  <a class="brand" href="#">
+    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M1 15h20M8 15v6M14 15v6" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h12M5 9h8" stroke="currentColor" stroke-width="1.6"/></svg>
+    VIBE-DOCS
+  </a>
+  <nav aria-label="Seções">
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#documentos">Documentos</a>
+    <a href="#instalar">Instalar</a>
+    <a href="https://github.com/padilhars/vibe-docs">GitHub</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow">Skill para Claude · v2.9</p>
+      <h1>Decida antes<br>de <em>codar</em>.</h1>
+      <p class="lede">A Vibe-Docs conduz a descoberta do seu sistema, consolida as decisões num <code>PROJECT.md</code> que é a fonte única de verdade e gera dele até 21 documentos rastreáveis, terminando no <code>CLAUDE.md</code> que o Claude Code carrega sozinho.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://github.com/padilhars/vibe-docs/releases/latest/download/vibe-docs.skill">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 14h12" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          Baixar vibe-docs.skill
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/padilhars/vibe-docs">Ver no GitHub</a>
+      </div>
+      <p class="meta-line">Claude.ai e Claude Code · Python 3.8+ nos scripts, sem dependências</p>
+    </div>
+
+    <figure class="sheet" style="margin:0" aria-label="Trecho de um PROJECT.md com carimbo técnico">
+      <div class="sheet-body">
+<pre><span class="k">---</span>
+<span class="k">project:</span> "Clínica Aurora"
+<span class="k">version:</span> "1.3"
+<span class="k">idioma_documentacao:</span> "pt-BR"
+<span class="k">---</span>
+
+## 10. Regras de Negócio
+<span class="id">BR-01</span> Remarcação sem custo até 24h antes.
+<span class="id">BR-02</span> Falta sem aviso bloqueia o agendamento
+      online por 30 dias.
+
+## 16. Pendências
+<span class="k">🟡 crítica:</span> quem pode liberar o bloqueio
+   da <span class="id">BR-02</span>? (secretária ou só a gestão)</pre>
+      </div>
+      <div class="carimbo">
+        <div class="wide"><small>Projeto</small><strong>Clínica Aurora · Agendamento</strong></div>
+        <div><small>Documento</small><strong>PROJECT.md</strong></div>
+        <div><small>Revisão</small><strong>1.3</strong></div>
+        <div><small>Folha</small><strong>1 / 22</strong></div>
+      </div>
+    </figure>
+  </div>
+
+  <section>
+    <div class="wrap sec-head">
+      <p class="sec-label">O problema</p>
+      <p class="problem">A maioria das conversas sobre criar um sistema pula para <strong>como construir</strong> antes de <strong>o que exatamente estamos construindo</strong> estar claro. A documentação sai com cara de completa e esconde decisões que ninguém tomou. Elas aparecem depois, no meio do código, quando o agente escolhe sozinho.</p>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-label">Como funciona</p>
+        <div>
+          <h2>Três etapas. Você decide quando avançar.</h2>
+          <p>A skill nunca pula de etapa sozinha. Cada uma tem uma responsabilidade e uma saída próprias.</p>
+        </div>
+      </div>
+      <div class="stages">
+        <article class="stage">
+          <span class="stage-n">ETAPA 1</span>
+          <h3>Concept</h3>
+          <p>Conversa investigativa. Cada pergunta traz um palpite para você confirmar ou corrigir, e a skill propõe o que você talvez não tenha pensado. Casos de borda e o que sistemas do mesmo domínio tiveram de resolver voltam como pergunta, nunca como funcionalidade adicionada por conta própria.</p>
+          <p class="say"><span>Você diz</span>"Tenho uma clínica e perco a manhã confirmando consulta por WhatsApp."</p>
+        </article>
+        <article class="stage">
+          <span class="stage-n">ETAPA 2</span>
+          <h3>Blueprint</h3>
+          <p>Antes de escrever qualquer coisa, um checkpoint obrigatório separa o que foi decidido do que ficou em aberto. Depois, o <code>PROJECT.md</code>: 22 seções, cada decisão com um ID.</p>
+          <p class="say"><span>Você diz</span>"Temos o suficiente, vamos consolidar."</p>
+        </article>
+        <article class="stage">
+          <span class="stage-n">ETAPA 3</span>
+          <h3>Files-Gen</h3>
+          <p>Cada documento é uma projeção do Blueprint. Cita IDs, não inventa; marca como PENDENTE o que não foi decidido; registra de qual versão saiu.</p>
+          <p class="say"><span>Você diz</span>"Gera o PRD, depois o modelo de dados."</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-label">Checkpoint</p>
+        <div>
+          <h2>Nada vira requisito sem você dizer sim.</h2>
+          <p>Antes de toda consolidação, a skill mostra o que entendeu em quatro categorias. Proposta não respondida não vira decisão, e contradição não é resolvida por palpite.</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="cat" style="--c: var(--ok)">
+          <h3><span class="dot"></span>Definido</h3>
+          <p class="rule">O que você afirmou ou aceitou.</p>
+          <ul>
+            <li>Remarcação grátis até 24h antes <span class="tag">BR-01</span></li>
+            <li>Confirmação automática por WhatsApp <span class="tag">FUN-02</span></li>
+          </ul>
+        </div>
+        <div class="cat" style="--c: var(--warn)">
+          <h3><span class="dot"></span>Pendente</h3>
+          <p class="rule">Sem resposta, separado por gravidade.</p>
+          <ul>
+            <li>Quem libera o bloqueio por falta? <span class="tag">crítica</span></li>
+            <li>Texto padrão do lembrete <span class="tag">menor</span></li>
+          </ul>
+        </div>
+        <div class="cat" style="--c: var(--info)">
+          <h3><span class="dot"></span>Sugestão futura</h3>
+          <p class="rule">Proposto, nem aceito nem recusado.</p>
+          <ul>
+            <li>Lista de espera para horários liberados</li>
+            <li>Lembrete também por e-mail</li>
+          </ul>
+        </div>
+        <div class="cat" style="--c: var(--bad)">
+          <h3><span class="dot"></span>Inconsistência</h3>
+          <p class="rule">Contradição para você resolver.</p>
+          <ul>
+            <li>"24h antes" na rodada 2, "48h antes" na rodada 5. Qual vale?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-label">Rastreabilidade</p>
+        <div>
+          <h2>Verificado por script, não por memória.</h2>
+          <p>IDs só nascem no Blueprint. Seis scripts em Python conferem o que a conversa não consegue garantir.</p>
+        </div>
+      </div>
+      <div class="split">
+        <ul class="points">
+          <li><strong>ID inventado</strong><span><code>check_traceability.py</code> aponta, com arquivo e linha, todo ID citado que não existe no Blueprint.</span></li>
+          <li><strong>Mudou uma regra?</strong><span><code>find_references.py</code> lista todo documento que a cita, e a skill mostra o plano de propagação antes de editar.</span></li>
+          <li><strong>Documento atrasado</strong><span><code>check_staleness.py</code> compara a versão do Blueprint com a de cada derivado. <code>check_coverage.py</code> acha a regra que nunca chegou ao documento onde é obrigatória.</span></li>
+          <li><strong>Pronto para implementar?</strong><span><code>handoff_check.py</code> bloqueia a entrega com pendência crítica aberta ou import quebrado no <code>CLAUDE.md</code>.</span></li>
+        </ul>
+        <div class="term" role="img" aria-label="Saída do check_traceability.py apontando BR-99 no PRD.md, linha 7">
+          <div class="term-bar"><i></i><i></i><i></i><b>clinica-aurora</b></div>
+<pre><span class="t-cmd">$ python scripts/check_traceability.py .</span>
+<span class="t-dim">Blueprint: ./PROJECT.md
+IDs válidos registrados: 4
+Documentos derivados analisados: 1</span>
+
+<span class="t-red">🔴 1 ID(s) citados em documentos derivados mas
+   ausentes do Blueprint:</span>
+
+  <span class="t-id">BR-99</span>
+    - ./PRD.md (linha 7)
+
+<span class="t-dim">→ Cada um desses é ou uma invenção a corrigir, ou
+  uma decisão real que ainda não foi levada de
+  volta ao PROJECT.md.</span>
+
+<span class="t-dim">ℹ️  FUN-02 definido no Blueprint e ainda não
+   referenciado (informativo)</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="documentos">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-label">21 documentos</p>
+        <div>
+          <h2>Peça qualquer um, em qualquer ordem.</h2>
+          <p>Tudo sai do mesmo Blueprint, então não é preciso reexplicar o sistema a cada documento. Para vibe coding, PRD, MVP, Architecture, Data Model, Backlog e CLAUDE.md já levam longe.</p>
+        </div>
+      </div>
+      <div class="docs">
+        <div><h3>Produto</h3><ul><li>PRD</li><li>MVP</li><li>Feature Spec</li></ul></div>
+        <div><h3>Funcional</h3><ul><li>Use Case Spec</li><li>Business Rules</li><li>User Stories</li><li>Process Spec</li></ul></div>
+        <div><h3>UX</h3><ul><li>UX Spec</li></ul></div>
+        <div><h3>Técnico</h3><ul><li>Architecture</li><li>Domain Model</li><li>Data Model</li><li>API Spec</li><li>Integration Spec</li><li>Security Spec</li><li>NFR</li></ul></div>
+        <div><h3>Desenvolvimento</h3><ul><li>Development Plan</li><li>Backlog</li><li>Test Strategy</li><li>Setup &amp; Runbook</li><li>STATE.md</li><li class="final">CLAUDE.md</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div>
+        <p class="sec-label" style="margin:0 0 16px">Entrega ao Claude Code</p>
+        <h2>Um contrato, não um resumo.</h2>
+        <p style="color:var(--ink-soft);margin:0 0 20px;max-width:34em">O <code>CLAUDE.md</code> fica abaixo de 200 linhas, e cada linha muda o que o agente faz: comandos, regras invioláveis, Definition of Done, o que não implementar nesta fase e o que fazer quando dois documentos discordam. O resto vem por import, sob demanda.</p>
+        <p style="color:var(--ink-soft);margin:0;max-width:34em">O <code>STATE.md</code> nasce junto e liga uma sessão de implementação à seguinte sem depender da conversa anterior.</p>
+      </div>
+      <div class="claude-md">
+        <div class="fname"><span>CLAUDE.md</span><span>trecho</span></div>
+<pre><span class="h">## Quando os documentos discordam</span>
+1. Decisão do usuário nesta sessão
+2. @PROJECT.md (fonte primária)
+3. Demais documentos
+4. Código e testes existentes
+
+Conflito em regra de negócio, permissão ou
+dado pessoal: pare e pergunte. Não escolha.
+
+<span class="h">## Nunca faça</span>
+- Enfraquecer um teste para ele passar.
+- Adicionar dependência sem aprovação.
+- Validar só no cliente.
+
+<span class="h">## Início e fim de sessão</span>
+Leia @STATE.md ao começar. Sobrescreva ao terminar.</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalar">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-label">Instalar</p>
+        <div>
+          <h2>Pronta em dois minutos.</h2>
+          <p>Sem comando para lembrar: depois de instalada, a skill dispara quando você apresenta um problema e uma ideia de sistema.</p>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Onde instalar">
+        <button class="tab" role="tab" id="tab-web" aria-selected="true" aria-controls="panel-web">Claude.ai</button>
+        <button class="tab" role="tab" id="tab-code" aria-selected="false" aria-controls="panel-code">Claude Code</button>
+      </div>
+
+      <div role="tabpanel" id="panel-web" aria-labelledby="tab-web">
+        <ol class="steps">
+          <li><div>Baixe o <a href="https://github.com/padilhars/vibe-docs/releases/latest/download/vibe-docs.skill">vibe-docs.skill</a> do último release.</div></li>
+          <li><div>Em <strong>Customize → Skills</strong>, clique em <strong>+ → Upload a skill</strong> e envie o arquivo. Deixe a execução de código ligada para a skill gravar arquivos e rodar os scripts.</div></li>
+          <li><div>Abra uma conversa e apresente o problema. Ela começa pelas perguntas, sem gerar documento ainda.</div></li>
+        </ol>
+      </div>
+
+      <div role="tabpanel" id="panel-code" aria-labelledby="tab-code" hidden>
+        <ol class="steps">
+          <li><div>Clone o repositório e copie a pasta da skill para as suas skills pessoais:
+            <div class="cmd"><pre id="cmd-install">git clone https://github.com/padilhars/vibe-docs.git
+mkdir -p ~/.claude/skills
+cp -r vibe-docs/vibe-docs ~/.claude/skills/</pre><button class="copy" type="button" data-target="cmd-install">Copiar</button></div>
+          </div></li>
+          <li><div>Para valer só num repositório, use <code>&lt;repo&gt;/.claude/skills/vibe-docs/</code>.</div></li>
+          <li><div>Peça <em>"me ajuda a pensar num sistema para…"</em> e acompanhe o <code>PROJECT.md</code> nascer na pasta do projeto.</div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Vibe-Docs v2.9 · feito por <a href="https://github.com/padilhars">padilhars</a></span>
+    <nav aria-label="Links">
+      <a href="https://github.com/padilhars/vibe-docs/tree/main/docs">Documentação</a>
+      <a href="https://github.com/padilhars/vibe-docs/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/padilhars/vibe-docs/releases">Releases</a>
+      <a href="https://github.com/padilhars/vibe-docs/issues">Reportar problema</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    });
+  });
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var el = document.getElementById(btn.dataset.target);
+      var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1600); };
+      var select = function () { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selecionado'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(el.textContent).then(done, select);
+      } else { select(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
