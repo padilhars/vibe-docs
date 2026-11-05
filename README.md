@@ -1,70 +1,79 @@
 # Vibe-Docs
 
-Skill do Claude que transforma uma ideia de sistema em documentação estruturada, pronta para orientar desenvolvimento assistido por IA (vibe coding).
+[![CI](https://github.com/padilhars/vibe-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/padilhars/vibe-docs/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/padilhars/vibe-docs)](https://github.com/padilhars/vibe-docs/releases/latest)
 
-## Instalação
+Skill do Claude que transforma uma ideia de sistema em documentação estruturada e rastreável, pronta para orientar desenvolvimento assistido por IA (*vibe coding*) no Claude Code.
 
-**A partir de um release:** baixe o arquivo `vibe-docs.skill` na aba Releases. No Claude.ai, vá em **Customize → Skills → + → Create skill → Upload a skill** e envie o arquivo.
+> Você traz o problema e a ideia. A skill conduz a descoberta, consolida tudo num `PROJECT.md` — a fonte única de verdade — e projeta dele até 21 documentos especializados, terminando num `CLAUDE.md` que o Claude Code carrega sozinho.
 
-**A partir do código-fonte:** clone este repositório e gere o pacote você mesmo — o `.skill` é apenas um zip com a pasta da skill dentro:
+## Por que existe
 
-```bash
-git clone <url-do-repo> vibe-docs
-zip -r vibe-docs.skill vibe-docs -x '*.git*'
-```
+A maioria das conversas sobre "criar um sistema" pula para *como construir* antes de *o que exatamente estamos construindo* estar claro. O resultado é documentação que parece completa mas esconde decisões nunca tomadas — lacunas que só aparecem no meio do código. A Vibe-Docs separa essas responsabilidades em três etapas e mantém tudo amarrado por IDs verificáveis por script.
 
-Depois envie o `.skill` gerado pelo mesmo caminho acima.
+## Início rápido
 
-Uma vez instalada, ela dispara sozinha ao reconhecer a intenção — não precisa de comando. Basta apresentar o problema e a ideia de solução, ou dizer "quero iniciar um novo projeto".
+1. Baixe `vibe-docs.skill` do [último release](https://github.com/padilhars/vibe-docs/releases/latest).
+2. No Claude.ai: **Customize → Skills → + → Upload a skill** e envie o arquivo.
+3. Comece uma conversa: *"quero iniciar um novo projeto: tenho um consultório e perco horas confirmando agendamento por WhatsApp"*.
+
+Não há comando: a skill dispara ao reconhecer a intenção. Detalhes e alternativas em [docs/instalacao.md](docs/instalacao.md).
 
 ## Como funciona
 
-Três etapas, com transição sempre controlada pelo usuário:
-
 | Etapa | O que acontece | Saída |
 |---|---|---|
-| **Concept** | Conversa investigativa — perguntas e propostas, sempre com um palpite embutido para você reagir em vez de preencher campo em branco | Nenhum arquivo |
-| **Blueprint** | Checkpoint 🟢🟡🔵🔴, depois consolidação | `PROJECT.md` — fonte única de verdade |
-| **Files-Gen** | Projeção do Blueprint em documentos especializados | 20 tipos de documento |
+| **1. Concept** | Conversa investigativa — perguntas e propostas, sempre com um palpite embutido para você reagir | Nenhum arquivo |
+| **2. Blueprint** | Checkpoint obrigatório 🟢🟡🔵🔴, depois consolidação | `PROJECT.md` |
+| **3. Files-Gen** | Projeção do Blueprint em documentos especializados | Até 21 documentos |
 
-O `PROJECT.md` é a única fonte primária de verdade. Todo documento derivado sai dele, nunca o contrário — é isso que permite pedir qualquer documento, em qualquer ordem, sem reexplicar o sistema.
+A transição entre etapas é sempre sua. Guia completo em [docs/guia-de-uso.md](docs/guia-de-uso.md).
 
 ## Documentos gerados
 
-**Produto:** PRD, MVP, Feature Spec
-**Funcional:** Use Case Spec, Business Rules, User Stories, Process Spec
-**UX:** UX Spec
-**Técnico:** Architecture, Domain Model, Data Model, API Spec, Integration Spec, Security Spec, NFR
-**Desenvolvimento:** Development Plan, Backlog, Test Strategy, Setup & Runbook, CLAUDE.md
+| Grupo | Documentos |
+|---|---|
+| Produto | PRD, MVP, Feature Spec |
+| Funcional | Use Case Spec, Business Rules, User Stories, Process Spec |
+| UX | UX Spec |
+| Técnico | Architecture, Domain Model, Data Model, API Spec, Integration Spec, Security Spec, NFR |
+| Desenvolvimento | Development Plan, Backlog, Test Strategy, Setup & Runbook, STATE.md, CLAUDE.md |
 
-O `CLAUDE.md` é o artefato final: um contrato de comportamento curto que o Claude Code carrega automaticamente quando está na raiz do repositório, com imports apontando para os documentos profundos.
+Catálogo com o propósito de cada um e a ordem recomendada: [docs/documentos.md](docs/documentos.md).
 
-## Estrutura da skill
+## Documentação
+
+| Página | Para quê |
+|---|---|
+| [Instalação](docs/instalacao.md) | Claude.ai, Claude Code e a partir do código-fonte |
+| [Guia de uso](docs/guia-de-uso.md) | As três etapas na prática, com exemplos de pedidos |
+| [Conceitos](docs/conceitos.md) | Blueprint, IDs, rastreabilidade, checkpoint, versionamento |
+| [Documentos](docs/documentos.md) | Os 21 tipos e quando pedir cada um |
+| [Scripts](docs/scripts.md) | Referência dos 6 scripts de verificação |
+| [Do blueprint ao Claude Code](docs/handoff-claude-code.md) | Como levar o projeto para implementação |
+| [Arquitetura da skill](docs/arquitetura-da-skill.md) | Como os arquivos se organizam e são carregados |
+| [FAQ](docs/faq.md) | Dúvidas e problemas comuns |
+| [Contribuindo](CONTRIBUTING.md) | Como alterar a skill e publicar versões |
+| [Changelog](CHANGELOG.md) | Histórico de versões |
+
+## Estrutura do repositório
 
 ```
-vibe-docs/
-├── SKILL.md                      orquestrador: etapas, roteamento, regras universais
-├── references/
-│   ├── concept/                  como conduzir a conversa
-│   ├── blueprint/                schema do PROJECT.md, checkpoint, maturidade
-│   └── documents/                um gerador por tipo de documento + regras comuns
-├── scripts/
-│   ├── find_references.py        análise de impacto por ID
-│   ├── check_traceability.py     detecta ID citado que não existe no Blueprint
-│   ├── project_status.py         visão geral do projeto
-│   ├── check_staleness.py        documentos gerados de uma versão antiga do Blueprint
-│   ├── check_coverage.py         decisão do Blueprint que nunca chegou a um documento
-│   └── handoff_check.py          verificação pré-entrega ao Claude Code
-└── assets/
-    └── project-template.md       esqueleto do PROJECT.md
+.
+├── vibe-docs/            ← a skill em si (é isto que vai para o .skill)
+│   ├── SKILL.md
+│   ├── references/       concept/ · blueprint/ · documents/
+│   ├── scripts/          6 verificadores em Python (sem dependências)
+│   └── assets/           project-template.md
+├── docs/                 documentação para pessoas (não vai no pacote)
+├── tools/                validação e empacotamento
+└── .github/              CI, release automático e templates de issue
 ```
 
 ## Requisitos
 
-Funciona melhor com acesso a terminal e sistema de arquivos — é o que permite persistir o `PROJECT.md`, rodar os scripts de rastreabilidade e ler código já existente. Sem isso, roda em modo conversacional, com essas verificações passando a ser manuais.
+Funciona melhor com terminal e sistema de arquivos (Claude.ai com execução de código, ou Claude Code) — é o que permite persistir o `PROJECT.md` e rodar os scripts. Sem isso, roda em modo conversacional, com as verificações passando a ser manuais. Os scripts usam apenas a biblioteca padrão do Python 3.8+.
 
-## Estrutura do repositório
+## Licença
 
-O que está versionado aqui é o código-fonte da skill. O arquivo `.skill` distribuído nos releases é apenas esta pasta compactada — se você editar qualquer arquivo, regenere o pacote com o comando da seção de instalação.
-
-Ao alterar comportamento, vale atualizar o `CHANGELOG.md` junto.
+A definir. Até um arquivo `LICENSE` ser adicionado, todos os direitos ficam reservados ao autor.

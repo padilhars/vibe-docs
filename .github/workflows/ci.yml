@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.8", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Validar estrutura da skill
+        run: python tools/validate_skill.py vibe-docs
+
+      - name: Smoke test dos scripts contra o template
+        run: |
+          mkdir -p /tmp/proj
+          cp vibe-docs/assets/project-template.md /tmp/proj/PROJECT.md
+          for s in vibe-docs/scripts/*.py; do
+            args=/tmp/proj
+            [ "$(basename "$s")" = find_references.py ] && args="/tmp/proj BR-01"
+            python -I "$s" $args > /dev/null
+            code=$?
+            # 0 = ok, 1 = problema encontrado; qualquer outro código é falha do script
+            if [ $code -gt 1 ]; then echo "::error::$s saiu com $code"; exit 1; fi
+            echo "$(basename "$s"): $code"
+          done
+        shell: bash {0}
+
+      - name: Links internos da documentação
+        run: |
+          python - <<'EOF'
+          import re, sys
+          from pathlib import Path
+          bad = []
+          for md in [Path("README.md"), Path("CONTRIBUTING.md"), *Path("docs").glob("*.md")]:
+              for link in re.findall(r"\]\(([^)#]+)(?:#[^)]*)?\)", md.read_text(encoding="utf-8")):
+                  if link.startswith(("http://", "https://", "mailto:")):
+                      continue
+                  if not (md.parent / link).exists():
+                      bad.append(f"{md}: {link}")
+          print("\n".join(bad) or "Todos os links internos resolvem.")
+          sys.exit(1 if bad else 0)
+          EOF
+
+      - name: Empacotar
+        run: python tools/build_skill.py
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.12'
+        with:
+          name: vibe-docs-skill
+          path: dist/vibe-docs.skill

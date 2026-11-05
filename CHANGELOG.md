@@ -1,5 +1,26 @@
 # Changelog — Vibe-Docs
 
+## v2.9
+- **Pesquisa de sistemas existentes no Concept** (`concept/prior-art.md`), nas rodadas do meio. Enquadrada deliberadamente como descoberta de **problemas que o domínio exige resolver** — no-show, webhook que não chega, limite de janela de API, exigência regulatória — e não como catálogo de funcionalidades de concorrente: o resultado vira pergunta, nunca funcionalidade adicionada por conta própria. Achado não decidido explicitamente pelo usuário entra como 🔵 Sugestão futura no checkpoint.
+- Três guardrails junto: a pesquisa nunca vira avaliação de mercado ou de viabilidade (`propositions.md`); respeita a proporcionalidade, pulando projetos pequenos; e distingue sempre "encontrei pesquisando agora" de "é conhecimento meu, que pode estar desatualizado" — distinção motivada por um caso real em que a skill afirmou que não existia API oficial de consulta a registro profissional e o usuário mostrou que existia.
+
+## v2.8
+Incorporações de uma proposta independente de metodologia para vibe coding, filtrada pelo que a skill ainda não cobria:
+- **Regra de precedência no `CLAUDE.md`**: o que fazer quando os documentos se contradizem, com a regra dura de que conflito envolvendo regra de negócio, permissão ou dado pessoal faz o agente parar e perguntar, nunca escolher. A skill não dizia nada sobre isso, e nossas próprias auditorias provaram que contradição acontece.
+- **Seção "Nunca faça" no `CLAUDE.md`**, com os modos de falha típicos de código gerado por IA: enfraquecer teste para passar, dependência nova sem aprovação (incluindo pacote inexistente ou com nome parecido com um legítimo, que é vetor de ataque), erro engolido em `try/catch`, refatoração fora de escopo, validação só no cliente. Os três primeiros também entraram na Definition of Done da seção 21.
+- **Fase 1 reenquadrada como esqueleto funcional**: uma fatia vertical fina de ponta a ponta em vez da infraestrutura inteira, para que o agente copie padrões reais do repositório em vez de inventá-los a cada funcionalidade.
+- **Novo documento `STATE.md`** (21º tipo): estado da implementação entre sessões — tarefa em andamento, bloqueios, questões. É o único documento que a skill cria para o agente de implementação manter, e o `CLAUDE.md` passa a mandar lê-lo no início e sobrescrevê-lo no fim de cada sessão.
+- **Garantias determinísticas no `SETUP-RUNBOOK`**: para cada princípio inviolável e item da Definition of Done, preferir verificação automática a instrução — o que o agente *não consegue* violar vale mais que o que ele *deve* lembrar.
+- **A documentação também deve encolher**: cortar vira parte legítima da revisão, como contrapeso ao viés de só acrescentar.
+
+## v2.7
+- **`check_coverage.py` ganhou gatilho concreto**: passa a ser passo obrigatório ao terminar qualquer documento agregador (`BUSINESS-RULES`, `TEST-STRATEGY`, `MVP`, `CLAUDE.md`), registrado tanto na rotina de `_shared-rules.md` quanto nos quatro geradores. Antes estava só listado e amarrado a "quando o usuário pedir" — a mesma posição do `handoff_check.py`, que atravessou um projeto real inteiro sem ser chamado nenhuma vez.
+
+## v2.6
+Ajuste derivado da primeira execução dos scripts contra um projeto real completo (21 documentos):
+- **`check_coverage.py` passa a exigir prestação de contas, não cobertura cega.** Na primeira execução ele acusou 6 BRs ausentes do `TEST-STRATEGY.md` — mas 4 delas eram legitimamente de Fase 2. O problema não era o recorte, era o recorte ser silencioso: exclusão não declarada é indistinguível de esquecimento. Agora o relatório separa as duas causas possíveis e diz como resolver cada uma.
+- **`test-strategy.md`**: toda `BR-xx` do Blueprint precisa aparecer no documento — com cenário de teste ou citada em "O que NÃO testar" com a justificativa.
+
 ## v2.5
 Correções derivadas do terceiro teste real (sistema de agendamento de salas), o primeiro em que os 21 documentos foram gerados numa sessão só:
 - **Rotina obrigatória ao terminar um documento** (`_shared-rules.md`): revisão crítica antes de entregar, atualização das seções 15 e 19 do Blueprint, remoção do texto antigo de pendência resolvida, e conferência das listas de pendências. No teste, a revisão só acontecia quando o usuário perguntava — e encontrava algo real em quase toda vez que ele perguntou.

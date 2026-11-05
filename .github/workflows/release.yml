@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validar
+        run: python tools/validate_skill.py vibe-docs
+
+      - name: Empacotar
+        run: python tools/build_skill.py
+
+      - name: Extrair notas da versão do CHANGELOG
+        run: |
+          python - <<'EOF'
+          import os, re
+          tag = os.environ["GITHUB_REF_NAME"]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(rf"^## {re.escape(tag)}\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+          notes = m.group(1).strip() if m else f"Versão {tag}. Ver CHANGELOG.md."
+          open("release-notes.md", "w", encoding="utf-8").write(notes + "\n")
+          EOF
+
+      - name: Publicar release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/vibe-docs.skill \
+            --title "Vibe-Docs $GITHUB_REF_NAME" \
+            --notes-file release-notes.md
