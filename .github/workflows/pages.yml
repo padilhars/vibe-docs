@@ -1,12 +1,12 @@
 name: Página
 
-# Publica site/ no GitHub Pages. Requer Pages ativado com origem "GitHub Actions"
+# Gera o site (site/ + docs/) e publica no GitHub Pages. Requer Pages ativado com origem "GitHub Actions"
 # (Settings → Pages → Build and deployment → Source).
 
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["site/**", "docs/**", "tools/build_site.py", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -26,9 +26,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Gerar site a partir de site/ e docs/
+        run: |
+          pip install markdown==3.7
+          python tools/build_site.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

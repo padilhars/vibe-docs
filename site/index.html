@@ -205,6 +205,16 @@ h2 { font: 800 clamp(1.8rem, 3.6vw, 2.6rem)/1.05 var(--display); font-stretch: 1
 .copy { appearance: none; border: 0; border-left: 1px solid rgba(255,255,255,0.1); background: transparent; color: #8fc1ff; font: 500 0.78rem/1 var(--mono); padding: 0 14px; cursor: pointer; flex: none; }
 .copy:hover { color: #ffffff; }
 
+/* Trilhas da documentação */
+.tracks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.track { display: grid; grid-template-rows: auto auto 1fr auto; gap: 10px; padding: 22px; background: var(--sheet); border: 1.5px solid var(--ink); color: var(--ink); text-decoration: none; min-width: 0; }
+.track:hover { box-shadow: 6px 6px 0 var(--line); }
+.track small { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.track h3 { margin: 0; font: 800 1.35rem/1.1 var(--display); font-stretch: 112%; }
+.track ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 0.9rem; color: var(--ink-soft); }
+.track .go { font-weight: 600; color: var(--accent); font-size: 0.92rem; }
+@media (max-width: 900px) { .tracks { grid-template-columns: minmax(0, 1fr); } }
+
 /* Rodapé */
 footer { border-top: 1.5px solid var(--ink); padding-block: 32px 48px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 0.88rem; color: var(--ink-soft); }
@@ -245,6 +255,7 @@ footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
     <a href="#como-funciona">Como funciona</a>
     <a href="#documentos">Documentos</a>
     <a href="#instalar">Instalar</a>
+    <a href="docs/index.html">Documentação</a>
     <a href="https://github.com/padilhars/vibe-docs">GitHub</a>
   </nav>
 </header>
@@ -464,6 +475,38 @@ Leia @STATE.md ao começar. Sobrescreva ao terminar.</pre>
     </div>
   </section>
 
+  <section id="documentacao">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-label">Documentação</p>
+        <div>
+          <h2>Um manual para cada papel.</h2>
+          <p>Quem usa, quem distribui e quem mantém a skill têm perguntas diferentes. A documentação está separada assim.</p>
+        </div>
+      </div>
+      <div class="tracks">
+        <a class="track" href="docs/guia-de-uso.html">
+          <small>Para quem usa</small>
+          <h3>Manual do usuário</h3>
+          <ul><li>Instalação</li><li>Guia de uso das três etapas</li><li>Conceitos e os 21 documentos</li><li>Do Blueprint ao Claude Code</li><li>FAQ</li></ul>
+          <span class="go">Ler o manual →</span>
+        </a>
+        <a class="track" href="docs/guia-do-admin.html">
+          <small>Para quem distribui</small>
+          <h3>Guia do administrador</h3>
+          <ul><li>Pré-requisitos por ambiente</li><li>Distribuição na organização</li><li>Versões e atualização</li><li>Onde ficam os dados</li><li>Problemas comuns</li></ul>
+          <span class="go">Ler o guia →</span>
+        </a>
+        <a class="track" href="docs/arquitetura-da-skill.html">
+          <small>Para quem mantém</small>
+          <h3>Documentação técnica</h3>
+          <ul><li>Arquitetura e carregamento</li><li>Referência dos scripts</li><li>Validação, release e site</li><li>Como adicionar um documento</li></ul>
+          <span class="go">Ler a documentação →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <section id="instalar">
     <div class="wrap">
       <div class="sec-head">
@@ -506,7 +549,7 @@ cp -r vibe-docs/vibe-docs ~/.claude/skills/</pre><button class="copy" type="butt
   <div class="wrap">
     <span>Vibe-Docs v2.9 · feito por <a href="https://github.com/padilhars">padilhars</a></span>
     <nav aria-label="Links">
-      <a href="https://github.com/padilhars/vibe-docs/tree/main/docs">Documentação</a>
+      <a href="docs/index.html">Documentação</a>
       <a href="https://github.com/padilhars/vibe-docs/blob/main/CHANGELOG.md">Changelog</a>
       <a href="https://github.com/padilhars/vibe-docs/releases">Releases</a>
       <a href="https://github.com/padilhars/vibe-docs/issues">Reportar problema</a>

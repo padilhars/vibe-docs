@@ -45,18 +45,13 @@ Catálogo com o propósito de cada um e a ordem recomendada: [docs/documentos.md
 
 ## Documentação
 
-| Página | Para quê |
-|---|---|
-| [Instalação](docs/instalacao.md) | Claude.ai, Claude Code e a partir do código-fonte |
-| [Guia de uso](docs/guia-de-uso.md) | As três etapas na prática, com exemplos de pedidos |
-| [Conceitos](docs/conceitos.md) | Blueprint, IDs, rastreabilidade, checkpoint, versionamento |
-| [Documentos](docs/documentos.md) | Os 21 tipos e quando pedir cada um |
-| [Scripts](docs/scripts.md) | Referência dos 6 scripts de verificação |
-| [Do blueprint ao Claude Code](docs/handoff-claude-code.md) | Como levar o projeto para implementação |
-| [Arquitetura da skill](docs/arquitetura-da-skill.md) | Como os arquivos se organizam e são carregados |
-| [FAQ](docs/faq.md) | Dúvidas e problemas comuns |
-| [Contribuindo](CONTRIBUTING.md) | Como alterar a skill e publicar versões |
-| [Changelog](CHANGELOG.md) | Histórico de versões |
+Também publicada em [padilhars.github.io/vibe-docs/docs](https://padilhars.github.io/vibe-docs/docs/).
+
+**Manual do usuário:** [Instalação](docs/instalacao.md) · [Guia de uso](docs/guia-de-uso.md) · [Conceitos](docs/conceitos.md) · [Documentos](docs/documentos.md) · [Do Blueprint ao Claude Code](docs/handoff-claude-code.md) · [FAQ](docs/faq.md)
+
+**Guia do administrador:** [Distribuição, versões e dados](docs/guia-do-admin.md)
+
+**Documentação técnica:** [Arquitetura da skill](docs/arquitetura-da-skill.md) · [Scripts](docs/scripts.md) · [Validação, release e site](docs/ci-e-release.md) · [Contribuindo](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
 ## Estrutura do repositório
 
@@ -67,14 +62,15 @@ Catálogo com o propósito de cada um e a ordem recomendada: [docs/documentos.md
 │   ├── references/       concept/ · blueprint/ · documents/
 │   ├── scripts/          6 verificadores em Python (sem dependências)
 │   └── assets/           project-template.md
-├── docs/                 documentação para pessoas (não vai no pacote)
+├── docs/                 documentação (fonte do site; não vai no pacote)
+├── site/                 página inicial e estilos do site
 ├── tools/                validação e empacotamento
 └── .github/              CI, release automático e templates de issue
 ```
 
 ## Requisitos
 
-Funciona melhor com terminal e sistema de arquivos (Claude.ai com execução de código, ou Claude Code) — é o que permite persistir o `PROJECT.md` e rodar os scripts. Sem isso, roda em modo conversacional, com as verificações passando a ser manuais. Os scripts usam apenas a biblioteca padrão do Python 3.8+.
+No Claude.ai, a execução de código e criação de arquivos precisa estar ligada (skills não rodam sem ela). No Claude Code, nada além dele. Os scripts usam apenas a biblioteca padrão do Python 3.8+.
 
 ## Licença
 

@@ -18,7 +18,7 @@ Não. Proposta não respondida vai para 🔵 Sugestões futuras no checkpoint. S
 
 ### Funciona sem execução de código?
 
-Sim, em modo conversacional: os documentos vêm na resposta e as verificações dos scripts passam a ser manuais. Para projetos com mais de três ou quatro documentos, vale ligar a execução.
+No Claude.ai, não: skills exigem a execução de código e criação de arquivos ligada. Se ela estiver desligada pela organização, fale com o administrador ([Guia do administrador](guia-do-admin.md)). No Claude Code ela sempre está disponível.
 
 ### Posso editar o `PROJECT.md` à mão?
 

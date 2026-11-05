@@ -6,9 +6,9 @@
 2. Em **Customize → Skills**, clique em **+ → Upload a skill** e envie o arquivo.
 3. Confirme que a skill aparece ativada na lista.
 
-A execução de código precisa estar ligada nas configurações para que a skill grave o `PROJECT.md` como arquivo e rode os scripts. Sem ela, a skill funciona em modo conversacional (veja [FAQ](faq.md#funciona-sem-execução-de-código)).
+A **execução de código e criação de arquivos** precisa estar ligada nas configurações: no Claude.ai, skills não rodam sem ela. É também o que permite à skill gravar o `PROJECT.md` e rodar os scripts.
 
-Em contas Team/Enterprise, o administrador pode precisar liberar o upload de skills, ou pode distribuí-la para a organização inteira.
+Em contas Team e Enterprise, o administrador pode distribuir a skill para a organização inteira. Veja o [Guia do administrador](guia-do-admin.md).
 
 ## Claude Code
 

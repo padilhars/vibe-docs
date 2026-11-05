@@ -52,6 +52,30 @@ jobs:
           sys.exit(1 if bad else 0)
           EOF
 
+      - name: Gerar site e checar links e âncoras
+        if: matrix.python == '3.12'
+        run: |
+          pip install markdown==3.7
+          python tools/build_site.py
+          python - <<'EOF'
+          import re, sys
+          from pathlib import Path
+          root = Path("_site").resolve(); bad = []
+          ids = {f: set(re.findall(r'id="([^"]+)"', f.read_text(encoding="utf-8"))) for f in root.rglob("*.html")}
+          for f in ids:
+              for href in re.findall(r'href="([^"]+)"', f.read_text(encoding="utf-8")):
+                  if href.startswith(("http://", "https://", "mailto:")):
+                      continue
+                  path, _, anchor = href.partition("#")
+                  target = (f.parent / path).resolve() if path else f
+                  if not target.exists():
+                      bad.append(f"{f.relative_to(root)}: {href}")
+                  elif anchor and target.suffix == ".html" and anchor not in ids[target]:
+                      bad.append(f"{f.relative_to(root)}: âncora {href}")
+          print("\n".join(bad) or "Links e âncoras do site resolvem.")
+          sys.exit(1 if bad else 0)
+          EOF
+
       - name: Empacotar
         run: python tools/build_skill.py
 
