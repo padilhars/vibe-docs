@@ -23,13 +23,11 @@
 
 ## Publicando uma versão
 
-1. Garanta que o `CHANGELOG.md` tem uma seção `## vX.Y` com as mudanças.
-2. Crie e envie a tag:
-   ```bash
-   git tag v3.0
-   git push origin v3.0
-   ```
-3. O workflow **Release** valida, empacota e publica `vibe-docs.skill` como release, usando a seção do CHANGELOG como notas.
+1. Adicione no topo do `CHANGELOG.md` uma seção `## vX.Y` com as mudanças.
+2. Envie para a `main` (direto ou pelo merge do Pull Request).
+3. O workflow **Release** percebe que essa versão ainda não tem release, cria a tag, valida, empacota e publica `vibe-docs.skill`, usando a seção do CHANGELOG como notas.
+
+Enviar uma tag `vX.Y` à mão também funciona, e o workflow pode ser disparado manualmente na aba Actions.
 
 Versionamento: incremente o **menor** (`v2.9 → v2.10`) para ajustes e novos documentos, e o **maior** (`v2.x → v3.0`) quando mudar a estrutura do `PROJECT.md` de forma que blueprints antigos precisem de adaptação.
 

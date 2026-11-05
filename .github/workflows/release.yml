@@ -1,8 +1,16 @@
 name: Release
 
+# Publica um release quando a versão mais recente do CHANGELOG.md ainda não
+# tem release. Basta adicionar "## vX.Y" no topo do CHANGELOG e enviar para a
+# main: o workflow cria a tag, empacota a skill e anexa o .skill ao release.
+# Também roda com push de tag v* (fluxo tradicional) ou manualmente.
+
 on:
   push:
+    branches: [main]
+    paths: ["CHANGELOG.md", "vibe-docs/**"]
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,27 +25,48 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validar
-        run: python tools/validate_skill.py vibe-docs
-
-      - name: Empacotar
-        run: python tools/build_skill.py
-
-      - name: Extrair notas da versão do CHANGELOG
+      - name: Descobrir versão e notas
+        id: version
         run: |
           python - <<'EOF'
           import os, re
-          tag = os.environ["GITHUB_REF_NAME"]
           text = open("CHANGELOG.md", encoding="utf-8").read()
+          ref = os.environ["GITHUB_REF"]
+          if ref.startswith("refs/tags/"):
+              tag = ref.removeprefix("refs/tags/")
+          else:
+              tag = re.search(r"^## (v[\w.\-]+)\s*$", text, re.M).group(1)
           m = re.search(rf"^## {re.escape(tag)}\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
           notes = m.group(1).strip() if m else f"Versão {tag}. Ver CHANGELOG.md."
           open("release-notes.md", "w", encoding="utf-8").write(notes + "\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"tag={tag}\n")
           EOF
 
-      - name: Publicar release
+      - name: Verificar se o release já existe
+        id: exists
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/vibe-docs.skill \
-            --title "Vibe-Docs $GITHUB_REF_NAME" \
+          if gh release view "${{ steps.version.outputs.tag }}" > /dev/null 2>&1; then
+            echo "Release ${{ steps.version.outputs.tag }} já existe, nada a fazer."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validar
+        if: steps.exists.outputs.skip != 'true'
+        run: python tools/validate_skill.py vibe-docs
+
+      - name: Empacotar
+        if: steps.exists.outputs.skip != 'true'
+        run: python tools/build_skill.py
+
+      - name: Publicar release
+        if: steps.exists.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" dist/vibe-docs.skill \
+            --target "$GITHUB_SHA" \
+            --title "Vibe-Docs ${{ steps.version.outputs.tag }}" \
             --notes-file release-notes.md
