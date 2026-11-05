@@ -8,7 +8,7 @@ name: Release
 on:
   push:
     branches: [main]
-    paths: ["CHANGELOG.md", "vibe-docs/**"]
+    paths: ["CHANGELOG.md", "vibe-docs/**", ".github/workflows/release.yml"]
     tags: ["v*"]
   workflow_dispatch:
 
