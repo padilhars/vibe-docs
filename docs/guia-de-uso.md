@@ -20,7 +20,7 @@ A skill trabalha em três etapas. Você decide quando passar de uma para a outra
 - Nas rodadas do meio, casos de borda (conflito de horário, cancelamento tardio, permissões) e uma pesquisa do que sistemas do mesmo domínio tiveram de resolver — que volta como pergunta, nunca como funcionalidade adicionada por conta própria.
 - Se você contradisser algo dito antes, ela aponta na hora.
 
-**O que não acontece:** nenhum arquivo é gerado. O Concept é só conversa.
+**O que não acontece:** nenhum arquivo é gerado. O Concept é só conversa, e o `PROJECT.md` só nasce na consolidação.
 
 Se já existe código, avise ou aponte a pasta: a skill lê o que dá para descobrir sozinha antes de perguntar.
 
@@ -37,7 +37,11 @@ Antes de escrever qualquer coisa, a skill apresenta o **checkpoint** — obrigat
 | 🔵 | Sugestão futura | Propostas nem aceitas nem recusadas, achados de pesquisa |
 | 🔴 | Inconsistência | Contradições não resolvidas — você escolhe qual vale |
 
-Depois da sua revisão, ela grava o `PROJECT.md` (22 seções, do resumo do negócio à fase atual). Esse arquivo é a **fonte única de verdade**: tudo o que vem depois sai dele.
+Com o checkpoint confirmado, vem a **simulação de uso real**: a skill narra o sistema funcionando nos primeiros dias, com atores concretos, procurando onde quebra (o sistema vazio no dia 1, alguém que faz fora de ordem, uma operação largada no meio). O relato separa o que exige decisão sua do que é correção direta, sempre com exemplo e correção proposta. Se não achar nada, ela diz isso explicitamente.
+
+Só então ela grava o `PROJECT.md`, versão 1.0 (22 seções, do resumo do negócio à fase atual). Esse arquivo é a **fonte única de verdade**: tudo o que vem depois sai dele.
+
+A sequência é sempre a mesma: checkpoint → sua confirmação → simulação → arquivo.
 
 ## 3. Files-Gen — gerar documentos
 
@@ -57,7 +61,26 @@ Ordem sugerida e descrição de cada tipo: [documentos.md](documentos.md).
 
 > Mudou: agora o paciente só pode remarcar até 48h antes, não 24h.
 
-A skill identifica o ID afetado, roda `find_references.py` para listar **todos** os documentos que o citam, mostra o plano de propagação **antes** de editar e só então atualiza o `PROJECT.md` (incrementando a versão) e oferece atualizar os derivados. Decisões não tocadas não são rediscutidas.
+A skill segue seis passos, nesta ordem:
+
+1. identifica o ID afetado e roda `find_references.py` para listar **todos** os documentos que o citam;
+2. mostra o plano de propagação **antes** de editar qualquer arquivo;
+3. simula de novo, se a mudança altera a sequência do que um ator faz ou quem pode fazer o quê;
+4. atualiza o `PROJECT.md`: a decisão, uma linha no histórico e a versão;
+5. propaga pelos documentos do plano, marcando cada um;
+6. confere com `check_staleness.py` e `check_coverage.py`.
+
+Decisões não tocadas não são rediscutidas.
+
+## Simulando sob demanda
+
+A qualquer momento depois de o Blueprint existir: *"que problemas podem ocorrer no uso diário?"*, *"como seria a primeira semana?"*, *"testa isso antes de eu fechar o MVP"*. Diferente das consultas abaixo, a simulação escreve no Blueprint: lacuna vira pendência ou regra, e o registro vai para o histórico de decisões.
+
+## Encerrando uma fase
+
+> O MVP está pronto. Vamos para a fase 2.
+
+A skill move a fase atual para "Fases concluídas" na seção 22, define com você o objetivo e as funcionalidades da nova fase e regenera o que depende dela: Development Plan, Backlog (as tarefas concluídas ficam), os limites de escopo do `CLAUDE.md` e o cabeçalho do `STATE.md`.
 
 ## Perguntas que você pode fazer a qualquer momento
 
@@ -72,14 +95,17 @@ São só leitura — não alteram nada.
 | "Revise tudo" / "está coerente?" | Os quatro verificadores + revisão manual do que eles não alcançam |
 | "Está pronto pro Claude Code?" | `handoff_check.py` |
 | "Quais as pendências / sugestões / princípios?" | Lê as seções 16, 17 e 20 do Blueprint |
+| "Em que fase o projeto está?" | Lê a seção 22 |
 | "Histórico de decisões?" | Lê a seção 18 |
 
 ## Retomando em outro chat
 
-Envie o `PROJECT.md` (e os documentos já gerados, se for alterar algum) e diga o que quer. A skill não depende da conversa anterior — esse é o ponto do Blueprint. Num Projeto do Claude.ai, deixar os arquivos no conhecimento do projeto faz isso automaticamente.
+Envie a **pasta inteira do projeto** (ou o arquivo compactado que a skill entrega a cada rodada) e diga o que quer. Com a pasta em mãos, a skill roda `project_status.py` e `check_staleness.py` antes de qualquer coisa e conta o que encontrou. Se você enviar só o `PROJECT.md`, dá para gerar documentos novos, mas os já existentes não serão conferidos nem atualizados. A skill não depende da conversa anterior — esse é o ponto do Blueprint. Num Projeto do Claude.ai, deixar os arquivos no conhecimento do projeto faz isso automaticamente.
+
+Guarde cada arquivo assim que ele é entregue: o ambiente em que a skill roda pode ser temporário.
 
 ## Dicas
 
 - **Projeto pequeno, documentação pequena.** A estrutura é a mesma, a profundidade não. Algumas pendências legítimas num sistema simples são o resultado certo.
-- **Não peça os 21 documentos.** Para *vibe coding*, PRD → MVP → Architecture → Data Model → Backlog → CLAUDE.md já leva longe.
+- **Não peça os 23 documentos.** Para *vibe coding*, PRD → MVP → Architecture → Data Model → Backlog → Test Strategy → Setup & Runbook → CLAUDE.md já leva longe.
 - **Defina o idioma cedo.** O campo `idioma_documentacao` do Blueprint vale para todos os documentos derivados.

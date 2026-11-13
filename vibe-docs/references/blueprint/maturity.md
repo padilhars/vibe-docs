@@ -18,6 +18,8 @@ Entidades principais          ✅ definidas
 Fluxo principal               ✅ definido
 Casos de borda                ⚠️ parcial (recorrência ok, cancelamento por terceiros pendente)
 Permissões                    ✅ definidas
+Regras de negócio             ✅ definidas
+Integrações externas          ❌ não discutido
 Requisitos não-funcionais     ❌ não discutido
 Riscos / dados sensíveis      ⚠️ parcial (identificado, sem detalhamento)
 Testes e qualidade            ❌ não discutido

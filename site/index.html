@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vibe-Docs</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Skill do Claude que transforma uma ideia de sistema em um PROJECT.md rastreável e até 21 documentos prontos para o Claude Code.">
+<meta name="description" content="Skill do Claude que transforma uma ideia de sistema em um PROJECT.md rastreável e até 23 documentos prontos para o Claude Code.">
 <meta property="og:title" content="Vibe-Docs — decida antes de codar">
 <meta property="og:description" content="Descoberta guiada, um Blueprint como fonte única de verdade e documentação verificável por script, do PRD ao CLAUDE.md.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -263,9 +263,9 @@ footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
 <main>
   <div class="wrap hero">
     <div>
-      <p class="eyebrow">Skill para Claude · v2.9</p>
+      <p class="eyebrow">Skill para Claude · v3.2</p>
       <h1>Decida antes<br>de <em>codar</em>.</h1>
-      <p class="lede">A Vibe-Docs conduz a descoberta do seu sistema, consolida as decisões num <code>PROJECT.md</code> que é a fonte única de verdade e gera dele até 21 documentos rastreáveis, terminando no <code>CLAUDE.md</code> que o Claude Code carrega sozinho.</p>
+      <p class="lede">A Vibe-Docs conduz a descoberta do seu sistema, consolida as decisões num <code>PROJECT.md</code> que é a fonte única de verdade e gera dele até 23 documentos rastreáveis, terminando no <code>CLAUDE.md</code> que o Claude Code carrega sozinho.</p>
       <div class="ctas">
         <a class="btn btn-primary" href="https://github.com/padilhars/vibe-docs/releases/latest/download/vibe-docs.skill">
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 14h12" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
@@ -328,7 +328,7 @@ footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
         <article class="stage">
           <span class="stage-n">ETAPA 2</span>
           <h3>Blueprint</h3>
-          <p>Antes de escrever qualquer coisa, um checkpoint obrigatório separa o que foi decidido do que ficou em aberto. Depois, o <code>PROJECT.md</code>: 22 seções, cada decisão com um ID.</p>
+          <p>Um checkpoint obrigatório separa o que foi decidido do que ficou em aberto. Uma simulação de uso real procura onde o sistema quebra nos primeiros dias. Só então nasce o <code>PROJECT.md</code>: 22 seções, cada decisão com um ID.</p>
           <p class="say"><span>Você diz</span>"Temos o suficiente, vamos consolidar."</p>
         </article>
         <article class="stage">
@@ -400,7 +400,7 @@ footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
           <li><strong>ID inventado</strong><span><code>check_traceability.py</code> aponta, com arquivo e linha, todo ID citado que não existe no Blueprint.</span></li>
           <li><strong>Mudou uma regra?</strong><span><code>find_references.py</code> lista todo documento que a cita, e a skill mostra o plano de propagação antes de editar.</span></li>
           <li><strong>Documento atrasado</strong><span><code>check_staleness.py</code> compara a versão do Blueprint com a de cada derivado. <code>check_coverage.py</code> acha a regra que nunca chegou ao documento onde é obrigatória.</span></li>
-          <li><strong>Pronto para implementar?</strong><span><code>handoff_check.py</code> bloqueia a entrega com pendência crítica aberta ou import quebrado no <code>CLAUDE.md</code>.</span></li>
+          <li><strong>Pronto para implementar?</strong><span><code>handoff_check.py</code> bloqueia a entrega com pendência crítica aberta, fase sem escopo definido ou <code>CLAUDE.md</code> sem as rotinas de fim de tarefa e de bug.</span></li>
         </ul>
         <div class="term" role="img" aria-label="Saída do check_traceability.py apontando BR-99 no PRD.md, linha 7">
           <div class="term-bar"><i></i><i></i><i></i><b>clinica-aurora</b></div>
@@ -429,7 +429,7 @@ Documentos derivados analisados: 1</span>
   <section id="documentos">
     <div class="wrap">
       <div class="sec-head">
-        <p class="sec-label">21 documentos</p>
+        <p class="sec-label">23 documentos</p>
         <div>
           <h2>Peça qualquer um, em qualquer ordem.</h2>
           <p>Tudo sai do mesmo Blueprint, então não é preciso reexplicar o sistema a cada documento. Para vibe coding, PRD, MVP, Architecture, Data Model, Backlog e CLAUDE.md já levam longe.</p>
@@ -440,7 +440,7 @@ Documentos derivados analisados: 1</span>
         <div><h3>Funcional</h3><ul><li>Use Case Spec</li><li>Business Rules</li><li>User Stories</li><li>Process Spec</li></ul></div>
         <div><h3>UX</h3><ul><li>UX Spec</li></ul></div>
         <div><h3>Técnico</h3><ul><li>Architecture</li><li>Domain Model</li><li>Data Model</li><li>API Spec</li><li>Integration Spec</li><li>Security Spec</li><li>NFR</li></ul></div>
-        <div><h3>Desenvolvimento</h3><ul><li>Development Plan</li><li>Backlog</li><li>Test Strategy</li><li>Setup &amp; Runbook</li><li>STATE.md</li><li class="final">CLAUDE.md</li></ul></div>
+        <div><h3>Desenvolvimento</h3><ul><li>Development Plan</li><li>Backlog</li><li>Test Strategy</li><li>Setup &amp; Runbook</li><li>Skills recomendadas</li><li>STATE.md</li><li>LEARNINGS.md</li><li class="final">CLAUDE.md</li></ul></div>
       </div>
     </div>
   </section>
@@ -450,27 +450,28 @@ Documentos derivados analisados: 1</span>
       <div>
         <p class="sec-label" style="margin:0 0 16px">Entrega ao Claude Code</p>
         <h2>Um contrato, não um resumo.</h2>
-        <p style="color:var(--ink-soft);margin:0 0 20px;max-width:34em">O <code>CLAUDE.md</code> fica abaixo de 200 linhas, e cada linha muda o que o agente faz: comandos, regras invioláveis, Definition of Done, o que não implementar nesta fase e o que fazer quando dois documentos discordam. O resto vem por import, sob demanda.</p>
-        <p style="color:var(--ink-soft);margin:0;max-width:34em">O <code>STATE.md</code> nasce junto e liga uma sessão de implementação à seguinte sem depender da conversa anterior.</p>
+        <p style="color:var(--ink-soft);margin:0 0 20px;max-width:34em">O <code>CLAUDE.md</code> fica abaixo de 200 linhas, e cada linha muda o que o agente faz: comandos, regras invioláveis, Definition of Done, o que não implementar nesta fase, o que fazer ao terminar cada tarefa e ao encontrar um bug. Os documentos profundos são citados pelo caminho, com a hora de abrir cada um, em vez de carregados inteiros em toda sessão.</p>
+        <p style="color:var(--ink-soft);margin:0;max-width:34em"><code>STATE.md</code> e <code>LEARNINGS.md</code> nascem junto: um diz onde a implementação está, o outro guarda o que ela ensinou. Os dois são atualizados a cada tarefa, então uma sessão nova retoma sem depender da anterior.</p>
       </div>
       <div class="claude-md">
         <div class="fname"><span>CLAUDE.md</span><span>trecho</span></div>
-<pre><span class="h">## Quando os documentos discordam</span>
-1. Decisão do usuário nesta sessão
-2. @PROJECT.md (fonte primária)
-3. Demais documentos
-4. Código e testes existentes
+<pre><span class="h">## Ao começar uma sessão</span>
+@docs/STATE.md
+@docs/LEARNINGS.md
 
-Conflito em regra de negócio, permissão ou
-dado pessoal: pare e pergunte. Não escolha.
+<span class="h">## Ao terminar cada tarefa</span>
+1. Rode a verificação e leia a saída.
+2. Confira a Definition of Done.
+3. Marque a tarefa em docs/BACKLOG.md.
+4. Sobrescreva docs/STATE.md.
+5. Registre o aprendizado em docs/LEARNINGS.md.
+6. Faça o commit.
 
-<span class="h">## Nunca faça</span>
-- Enfraquecer um teste para ele passar.
-- Adicionar dependência sem aprovação.
-- Validar só no cliente.
-
-<span class="h">## Início e fim de sessão</span>
-Leia @STATE.md ao começar. Sobrescreva ao terminar.</pre>
+<span class="h">## Ao encontrar um bug</span>
+1. Escreva um teste que reproduz o bug
+   e veja-o falhar pelo motivo certo.
+2. Corrija.
+3. Mantenha o teste na suíte.</pre>
       </div>
     </div>
   </section>
@@ -488,7 +489,7 @@ Leia @STATE.md ao começar. Sobrescreva ao terminar.</pre>
         <a class="track" href="docs/guia-de-uso.html">
           <small>Para quem usa</small>
           <h3>Manual do usuário</h3>
-          <ul><li>Instalação</li><li>Guia de uso das três etapas</li><li>Conceitos e os 21 documentos</li><li>Do Blueprint ao Claude Code</li><li>FAQ</li></ul>
+          <ul><li>Instalação</li><li>Guia de uso das três etapas</li><li>Conceitos e os 23 documentos</li><li>Do Blueprint ao Claude Code</li><li>FAQ</li></ul>
           <span class="go">Ler o manual →</span>
         </a>
         <a class="track" href="docs/guia-do-admin.html">
@@ -547,7 +548,7 @@ cp -r vibe-docs/vibe-docs ~/.claude/skills/</pre><button class="copy" type="butt
 
 <footer>
   <div class="wrap">
-    <span>Vibe-Docs v2.9 · feito por <a href="https://github.com/padilhars">padilhars</a></span>
+    <span>Vibe-Docs v3.2 · feito por <a href="https://github.com/padilhars">padilhars</a></span>
     <nav aria-label="Links">
       <a href="docs/index.html">Documentação</a>
       <a href="https://github.com/padilhars/vibe-docs/blob/main/CHANGELOG.md">Changelog</a>

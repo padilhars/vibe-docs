@@ -23,10 +23,10 @@ Todas as `BR-xx` da seção 10, mais as entidades e casos de uso que cada uma re
 **Validação esperada:** [como testar se a regra está sendo respeitada, em termos de comportamento observável]
 ```
 
-
 ## Verificação obrigatória ao terminar
 
 Rode `scripts/check_coverage.py <pasta-do-projeto>` antes de entregar. Este é um documento agregador: ele precisa refletir decisões tomadas ao longo de todo o projeto, e uma ausência aqui não aparece na leitura — o documento parece completo justamente porque o que falta não está nele. Resolva o que o script apontar (incluindo declarar exclusões deliberadas) antes de considerar o documento pronto.
+
 ## Regras específicas
 - A tabela é o resumo navegável; o detalhamento abaixo dela é o texto completo — não deixe as duas seções divergirem.
 - "Validação esperada" deve ser concreto o suficiente para virar um teste, mas isso não é o mesmo que um Critério de Aceitação formal (esses ficam em `user-stories.md`, ligados a uma história específica) — aqui é validação da regra em si, independente de qual fluxo a aciona.

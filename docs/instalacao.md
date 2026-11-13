@@ -46,4 +46,4 @@ Numa conversa nova, escreva algo como *"me ajuda a pensar num sistema para contr
 
 ## Atualizando
 
-Baixe o `.skill` novo e envie de novo pelo mesmo caminho; a versão anterior é substituída. O que mudou em cada versão está no [CHANGELOG](../CHANGELOG.md). Projetos já em andamento continuam compatíveis: o `PROJECT.md` não depende da versão da skill que o gerou.
+Baixe o `.skill` novo e envie de novo pelo mesmo caminho; a versão anterior é substituída. O que mudou em cada versão está no [CHANGELOG](../CHANGELOG.md). Projetos já em andamento continuam compatíveis: o `PROJECT.md` não depende da versão da skill que o gerou. Vindo de uma versão anterior à v3.2, regenere o `CLAUDE.md` dos projetos que já estão em implementação (o motivo está no [FAQ](faq.md)).

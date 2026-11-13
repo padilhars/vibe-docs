@@ -2,10 +2,18 @@
 """
 handoff_check.py — Verificação pré-entrega para implementação autônoma.
 
-Checa se um projeto tem o mínimo necessário para ser entregue a uma ferramenta
-de desenvolvimento assistido por IA (Claude Code) sem que ela precise adivinhar
-o que falta: documentos essenciais presentes, CLAUDE.md válido, imports que
-apontam para arquivos existentes, e nenhuma pendência crítica em aberto.
+Checa se um projeto tem o mínimo para ser entregue ao Claude Code sem que o
+agente precise adivinhar o que falta:
+
+  - documentos essenciais presentes;
+  - nenhuma pendência crítica em aberto (seção 16);
+  - recorte do MVP (seção 4) e fase atual (seção 22) preenchidos;
+  - princípios (seção 20) e Definition of Done (seção 21) decididos;
+  - CLAUDE.md enxuto, com as rotinas de fim de tarefa e de bug, apontando só
+    para arquivos que existem e importando com @ apenas o que é pequeno.
+
+Funciona nos dois layouts: tudo numa pasta só, ou CLAUDE.md na raiz do
+repositório com o restante em docs/ (passe a pasta que contém o PROJECT.md).
 
 Uso:
     python handoff_check.py <pasta-do-projeto>
@@ -17,20 +25,31 @@ import re
 import sys
 from pathlib import Path
 
-PROJECT_FILENAME = "PROJECT.md"
-CLAUDE_MD = "CLAUDE.md"
+# Garante o import de _common mesmo em modo isolado (python -I), que tira a
+# pasta do script do sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-# Documentos considerados essenciais para implementação autônoma.
+from _common import (  # noqa: E402
+    AGENT_MAINTAINED,
+    CLAUDE_MD,
+    PROJECT_FILENAME,
+    critical_pendencies,
+    field_value,
+    project_files,
+    read,
+    section_body,
+)
+
 ESSENTIAL = {
-    "CLAUDE.md": "contrato de comportamento carregado automaticamente pelo Claude Code",
+    "CLAUDE.md": "contrato de comportamento que o Claude Code carrega sozinho",
     "ARCHITECTURE.md": "stack e componentes — sem isso o agente escolhe tecnologia sozinho",
     "BACKLOG.md": "o que implementar, em tarefas acionáveis",
     "TEST-STRATEGY.md": "como o agente verifica o próprio trabalho",
     "SETUP-RUNBOOK.md": "como rodar, testar e buildar o projeto",
-    "STATE.md": "ponte entre sessões de implementação — sem ele cada sessão começa cega",
+    "STATE.md": "onde a implementação está — sem ele cada sessão começa cega",
+    "LEARNINGS.md": "o que as sessões anteriores aprenderam — sem ele cada sessão reaprende",
 }
 
-# Recomendados, não bloqueantes.
 RECOMMENDED = {
     "DATA-MODEL.md": "estrutura de dados concreta",
     "BUSINESS-RULES.md": "regras consolidadas para consulta",
@@ -38,9 +57,8 @@ RECOMMENDED = {
     "DEVELOPMENT-PLAN.md": "ordem de implementação",
 }
 
-# Documento -> subseção correspondente na seção 19 (Aprofundamento por Área).
-# Documento que existe com a área ainda PENDENTE significa que decisões foram
-# tomadas durante a geração e não voltaram para o Blueprint.
+# Documento -> subseção da seção 19. Documento gerado com a área ainda PENDENTE
+# indica decisão tomada na geração que não voltou para o Blueprint.
 DOC_TO_AREA = {
     "ARCHITECTURE.md": "Arquitetura",
     "UX-SPEC.md": "UX/UI",
@@ -52,30 +70,23 @@ DOC_TO_AREA = {
     "TEST-STRATEGY.md": "Testes e Qualidade",
 }
 
-# Seções do Blueprint que, vazias/PENDENTE, comprometem o handoff.
 BLUEPRINT_SECTIONS = {
-    20: "Princípios Não-Negociáveis",
-    21: "Definition of Done e Convenções de Trabalho",
+    20: ("Princípios Não-Negociáveis", "regras invioláveis"),
+    21: ("Definition of Done e Convenções de Trabalho", "critério para saber quando parar"),
 }
 
-IMPORT_PATTERN = re.compile(r"@([A-Za-z0-9_\-./]+\.md)")
+# Rotinas que o CLAUDE.md precisa trazer (ver references/documents/claude-md.md).
+REQUIRED_ROUTINES = {
+    "terminar cada tarefa": "a rotina de fim de tarefa (verificar, marcar no backlog, atualizar estado e aprendizados)",
+    "encontrar um bug": "o protocolo de bug (teste que reproduz antes da correção)",
+}
+
+# Menção a um documento do projeto dentro do CLAUDE.md, com ou sem @.
+DOC_REFERENCE = re.compile(r"(@?)((?:[A-Za-z0-9_.-]+/)*[A-Z][A-Z0-9-]*\.md)\b")
 
 
-def section_body(lines, number):
-    start = None
-    pattern = re.compile(rf"^##\s*{number}\.")
-    for i, line in enumerate(lines):
-        if pattern.match(line.strip()):
-            start = i
-            break
-    if start is None:
-        return None
-    end = len(lines)
-    for i in range(start + 1, len(lines)):
-        if re.match(r"^##\s", lines[i].strip()):
-            end = i
-            break
-    return "\n".join(lines[start + 1:end]).strip()
+def is_pending(value) -> bool:
+    return value is None or not value.strip() or "PENDENTE" in value.upper()
 
 
 def main():
@@ -88,117 +99,115 @@ def main():
         print(f"❌ Pasta de projeto não encontrada: {project_dir}")
         sys.exit(1)
 
-    blockers = []
-    warnings = []
+    blockers, warnings = [], []
+    files = project_files(project_dir)
 
-    present = {p.name: p for p in project_dir.glob("*.md")}
-
-    # 1. Documentos essenciais
     for name, why in ESSENTIAL.items():
-        if name not in present:
+        if name not in files:
             blockers.append(f"{name} não existe — {why}")
-
     for name, why in RECOMMENDED.items():
-        if name not in present:
+        if name not in files:
             warnings.append(f"{name} não existe — {why}")
 
-    # 2. Blueprint: pendências críticas e seções-chave
-    project_md = present.get(PROJECT_FILENAME)
-    if not project_md:
+    if PROJECT_FILENAME not in files:
         blockers.append(f"{PROJECT_FILENAME} não existe — não há fonte de verdade para o projeto")
     else:
-        lines = project_md.read_text(encoding="utf-8", errors="replace").splitlines()
+        lines = read(files[PROJECT_FILENAME]).splitlines()
 
-        pend = section_body(lines, 16)
+        pend = critical_pendencies(lines)
         if pend:
-            critical_block = pend.split("**Menores")[0]
-            items = [
-                l.strip("- ").strip()
-                for l in critical_block.splitlines()
-                if l.strip().startswith("-") and "nenhuma" not in l.lower()
-            ]
-            if items:
-                blockers.append(
-                    f"{len(items)} pendência(s) crítica(s) em aberto no Blueprint: "
-                    + "; ".join(items[:3])
-                    + ("..." if len(items) > 3 else "")
-                )
+            blockers.append(
+                f"{len(pend)} pendência(s) crítica(s) em aberto no Blueprint: "
+                + "; ".join(pend[:3]) + ("..." if len(pend) > 3 else "")
+            )
 
-        # Recorte do MVP: se MVP.md existe, a seção 4 precisa refletir o corte
-        escopo = section_body(lines, 4) or ""
-        if "MVP.md" in present:
-            recorte = ""
-            for chunk in escopo.split("**"):
-                if chunk.lower().startswith("recorte do mvp"):
-                    recorte = chunk
-            if not recorte:
-                blockers.append(
-                    "MVP.md existe, mas a seção 4 do Blueprint não tem o campo 'Recorte do MVP' — "
-                    "o CLAUDE.md pode acabar proibindo o que o Blueprint diz estar no escopo"
-                )
-            elif "PENDENTE" in recorte.upper():
-                blockers.append(
-                    "MVP.md existe, mas 'Recorte do MVP' na seção 4 está PENDENTE — "
-                    "o corte do MVP não voltou para o Blueprint"
-                )
+        if "MVP.md" in files:
+            recorte = field_value(section_body(lines, 4) or "", "Recorte do MVP")
+            if recorte is None:
+                blockers.append("MVP.md existe, mas a seção 4 do Blueprint não tem o campo 'Recorte do MVP'")
+            elif is_pending(recorte):
+                blockers.append("MVP.md existe, mas 'Recorte do MVP' na seção 4 está PENDENTE — o corte não voltou para o Blueprint")
 
-        # Aprofundamento: documento gerado com a área correspondente ainda vazia
+        fase = section_body(lines, 22)
+        if fase is None:
+            warnings.append("Seção 22 (Fase Atual) não existe no Blueprint")
+        elif "BACKLOG.md" in files or "MVP.md" in files:
+            if is_pending(field_value(fase, "Funcionalidades desta fase")):
+                blockers.append(
+                    "Seção 22: 'Funcionalidades desta fase' está PENDENTE — Backlog e CLAUDE.md "
+                    "falam em 'desta fase' sem que nada diga quais funcionalidades ela inclui"
+                )
+            if is_pending(field_value(fase, "Objetivo desta fase")):
+                warnings.append("Seção 22: 'Objetivo desta fase' está PENDENTE")
+
         area_body = section_body(lines, 19) or ""
         for doc, area in DOC_TO_AREA.items():
-            if doc not in present:
+            if doc not in files:
                 continue
-            trecho = ""
-            for bloco in area_body.split("### "):
-                if bloco.startswith(area):
-                    trecho = bloco
-                    break
+            trecho = next((b for b in area_body.split("### ") if b.startswith(area)), "")
             if not trecho or "PENDENTE" in trecho.upper():
                 warnings.append(
                     f"{doc} existe, mas a área '{area}' da seção 19 segue PENDENTE — "
                     "decisões tomadas ao gerar o documento podem não ter voltado ao Blueprint"
                 )
 
-        for num, label in BLUEPRINT_SECTIONS.items():
+        for num, (label, consequence) in BLUEPRINT_SECTIONS.items():
             body = section_body(lines, num)
             if body is None:
                 warnings.append(f"Seção {num} ({label}) não existe no Blueprint")
-            elif not body or "PENDENTE" in body.upper():
-                blockers.append(
-                    f"Seção {num} ({label}) está PENDENTE — o agente não terá {'regras invioláveis' if num == 20 else 'critério para saber quando parar'}"
-                )
+            elif is_pending(body):
+                blockers.append(f"Seção {num} ({label}) tem item PENDENTE — o agente não terá {consequence}")
 
-    # 3. CLAUDE.md: tamanho e imports
-    claude_md = present.get(CLAUDE_MD)
-    if claude_md:
-        content = claude_md.read_text(encoding="utf-8", errors="replace")
+    if CLAUDE_MD in files:
+        claude_path = files[CLAUDE_MD]
+        content = read(claude_path)
         line_count = len(content.splitlines())
         if line_count > 200:
             warnings.append(
-                f"{CLAUDE_MD} tem {line_count} linhas — acima de ~200 ele consome context window demais; considere mover detalhe para os documentos importados"
+                f"{CLAUDE_MD} tem {line_count} linhas — acima de ~200 a aderência cai; mova detalhe para os documentos referenciados"
             )
-        for imported in IMPORT_PATTERN.findall(content):
-            target = (project_dir / Path(imported).name)
-            if not target.exists():
-                blockers.append(
-                    f"{CLAUDE_MD} importa @{imported}, que não existe na pasta do projeto"
+        if content.lstrip().startswith("---"):
+            warnings.append(f"{CLAUDE_MD} começa com frontmatter — ele não leva metadados (cada linha ali é contexto de toda sessão)")
+
+        low = content.lower()
+        for marker, what in REQUIRED_ROUTINES.items():
+            if marker not in low:
+                blockers.append(f"{CLAUDE_MD} não traz {what}")
+
+        seen = set()
+        for at, ref in DOC_REFERENCE.findall(content):
+            base = Path(ref).name
+            if base == CLAUDE_MD or (at, ref) in seen:
+                continue
+            seen.add((at, ref))
+            target = None
+            for candidate in (claude_path.parent / ref, project_dir / base):
+                if candidate.exists():
+                    target = candidate
+                    break
+            if target is None:
+                blockers.append(f"{CLAUDE_MD} aponta para {at}{ref}, que não existe")
+            elif at and base not in AGENT_MAINTAINED:
+                size = len(read(target).splitlines())
+                warnings.append(
+                    f"{CLAUDE_MD} importa @{ref} ({size} linhas) — arquivo importado com @ é carregado inteiro "
+                    "em toda sessão; cite o caminho sem @ e diga quando lê-lo"
                 )
 
-    # Relatório
     print(f"📁 Projeto: {project_dir}\n")
-    print(f"Documentos presentes: {len(present)}")
+    print(f"Documentos presentes: {len(files)}")
 
     if blockers:
         print(f"\n🔴 {len(blockers)} bloqueio(s) para implementação autônoma:\n")
         for b in blockers:
             print(f"  • {b}")
-
     if warnings:
         print(f"\n🟡 {len(warnings)} aviso(s) — não impedem, mas reduzem a autonomia do agente:\n")
         for w in warnings:
             print(f"  • {w}")
 
     if not blockers and not warnings:
-        print("\n🟢 Pronto para handoff — nenhum bloqueio ou aviso encontrado.")
+        print("\n🟢 Pronto para handoff — nenhum bloqueio ou aviso.")
     elif not blockers:
         print("\n🟢 Sem bloqueios. Os avisos acima são opcionais.")
     else:

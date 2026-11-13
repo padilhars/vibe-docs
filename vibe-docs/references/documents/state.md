@@ -5,26 +5,27 @@ Todos os outros documentos descrevem o que o sistema **deve ser**. Este descreve
 
 Ele existe porque implementação assistida por IA acontece em sessões curtas e independentes. Sem um estado escrito, cada sessão nova começa cega — relê o backlog inteiro, não sabe se a TASK-012 ficou pela metade, não sabe que a TASK-015 está bloqueada esperando uma credencial. O histórico da conversa anterior não está disponível, e não deveria ser a ponte mesmo quando está.
 
-## O que torna este documento diferente de todos os outros
+## O que torna este documento diferente
 
-É o único que a vibe-docs cria para **outra pessoa manter**. A skill gera a versão inicial e a convenção; a partir daí quem escreve nele é o agente de implementação, ao fim de cada sessão.
+Junto com o `LEARNINGS.md`, é um dos dois arquivos que a vibe-docs cria para **o agente de implementação manter**. A skill gera a versão inicial e a convenção; a partir daí quem escreve nele é o agente, ao fim de cada tarefa (ver a rotina em `claude-md.md`).
 
-Duas consequências:
-- **É sobrescrito, nunca acumulado.** Estado é o agora. O histórico fica no git e no `PROJECT.md` (seção 18) — se este arquivo virar um diário, ninguém lê e ele para de cumprir a função.
-- **Cabe numa tela.** Se não couber, é porque virou relatório. Corte.
+Três consequências:
+- **É sobrescrito, nunca acumulado.** Estado é o agora. O histórico fica no git — se este arquivo virar um diário, ninguém lê e ele para de cumprir a função.
+- **Cabe numa tela.** Ele é importado com `@` pelo `CLAUDE.md`, ou seja, carregado inteiro em toda sessão. Se não couber numa tela, virou relatório: corte.
+- **Não leva frontmatter nem versão.** Não é derivado de uma versão do Blueprint, e os scripts o deixam fora da comparação de versões.
 
 ## Insumos necessários
-Backlog (primeira tarefa da fase atual) e seção 22 do Blueprint (fase atual). Gere junto com o `CLAUDE.md`, no fim do pipeline — os dois formam o par que uma sessão de implementação lê para se situar.
+Backlog (primeira tarefa da fase atual) e seção 22 do Blueprint. Gere junto com o `CLAUDE.md` e o `LEARNINGS.md`, no fim do pipeline. No layout final, vive em `docs/STATE.md`.
 
 ## Estrutura obrigatória
 
 ```markdown
 # Estado — [Nome do Projeto]
 
-**Atualizado em:** [data] · **Fase:** [da seção 22 do Blueprint]
+**Atualizado em:** [data] · **Fase:** [da seção 22 do Blueprint] · **Onda:** [do Backlog]
 
 ## Em andamento
-[a tarefa sendo implementada agora, com o ID. "Nenhuma" se a última sessão fechou limpa.]
+[a tarefa sendo implementada agora, com o ID, e em que ponto ela está. "Nenhuma" se a última tarefa fechou limpa.]
 
 ## Concluídas recentemente
 [as 3 a 5 últimas, com ID. As antigas saem daqui — o backlog guarda o status completo.]
@@ -33,10 +34,10 @@ Backlog (primeira tarefa da fase atual) e seção 22 do Blueprint (fase atual). 
 [as 2 ou 3 seguintes, na ordem do backlog]
 
 ## Bloqueios
-[o que impede o avanço e de quem depende. Vazio é o estado normal — bloqueio aqui é exceção, não lista de desejos.]
+[o que impede o avanço e de quem depende. Vazio é o estado normal.]
 
 ## Questões em aberto
-[dúvidas que surgiram implementando e precisam de decisão humana. Cada uma vira pendência no Blueprint se for decisão de negócio.]
+[dúvidas que surgiram implementando e precisam de decisão humana.]
 ```
 
 ## Versão inicial
@@ -45,6 +46,6 @@ Antes da primeira linha de código, o arquivo registra que o projeto está docum
 
 ## Regras específicas
 
-- **Não duplique o backlog.** O backlog tem todas as tarefas e o status de cada uma; este arquivo tem só o recorte do momento. Se os dois divergirem, o backlog vence.
-- **Não registre decisão de negócio aqui.** Decisão vai para o Blueprint, que é a fonte de verdade; aqui fica, no máximo, a pergunta ainda não respondida.
-- **O `CLAUDE.md` precisa mandar ler este arquivo no início da sessão e atualizá-lo no fim.** Sem essas duas instruções, o arquivo nasce e morre na versão inicial (ver `claude-md.md`).
+- **Não duplique o backlog.** O backlog tem todas as tarefas e o status de cada uma, e a rotina de fim de tarefa manda marcá-lo antes de atualizar este arquivo. Aqui fica só o recorte do momento. Se os dois divergirem, o backlog vence.
+- **Não registre decisão de negócio aqui.** Decisão vai para o Blueprint; aqui fica, no máximo, a pergunta ainda não respondida. Uma questão em aberto que seja decisão de negócio deve ser levada ao usuário, e a resposta entra no `PROJECT.md` pelo fluxo de alteração de decisão.
+- **Não registre aprendizado aqui.** O que a implementação ensinou vai para o `LEARNINGS.md`, que acumula; este arquivo é sobrescrito e perderia.

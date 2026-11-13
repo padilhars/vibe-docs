@@ -7,7 +7,7 @@
 
 Skill do Claude que transforma uma ideia de sistema em documentação estruturada e rastreável, pronta para orientar desenvolvimento assistido por IA (*vibe coding*) no Claude Code.
 
-> Você traz o problema e a ideia. A skill conduz a descoberta, consolida tudo num `PROJECT.md` — a fonte única de verdade — e projeta dele até 21 documentos especializados, terminando num `CLAUDE.md` que o Claude Code carrega sozinho.
+> Você traz o problema e a ideia. A skill conduz a descoberta, consolida tudo num `PROJECT.md` — a fonte única de verdade — e projeta dele até 23 documentos especializados, terminando num `CLAUDE.md` que o Claude Code carrega sozinho e que já traz a rotina de fim de tarefa e o protocolo de bug.
 
 ## Por que existe
 
@@ -26,8 +26,8 @@ Não há comando: a skill dispara ao reconhecer a intenção. Detalhes e alterna
 | Etapa | O que acontece | Saída |
 |---|---|---|
 | **1. Concept** | Conversa investigativa — perguntas e propostas, sempre com um palpite embutido para você reagir | Nenhum arquivo |
-| **2. Blueprint** | Checkpoint obrigatório 🟢🟡🔵🔴, depois consolidação | `PROJECT.md` |
-| **3. Files-Gen** | Projeção do Blueprint em documentos especializados | Até 21 documentos |
+| **2. Blueprint** | Checkpoint obrigatório 🟢🟡🔵🔴, simulação de uso real, depois consolidação | `PROJECT.md` |
+| **3. Files-Gen** | Projeção do Blueprint em documentos especializados | Até 23 documentos |
 
 A transição entre etapas é sempre sua. Guia completo em [docs/guia-de-uso.md](docs/guia-de-uso.md).
 
@@ -39,7 +39,8 @@ A transição entre etapas é sempre sua. Guia completo em [docs/guia-de-uso.md]
 | Funcional | Use Case Spec, Business Rules, User Stories, Process Spec |
 | UX | UX Spec |
 | Técnico | Architecture, Domain Model, Data Model, API Spec, Integration Spec, Security Spec, NFR |
-| Desenvolvimento | Development Plan, Backlog, Test Strategy, Setup & Runbook, STATE.md, CLAUDE.md |
+| Desenvolvimento | Development Plan, Backlog, Test Strategy, Setup & Runbook, Skills recomendadas |
+| Para o agente de implementação | CLAUDE.md, STATE.md, LEARNINGS.md |
 
 Catálogo com o propósito de cada um e a ordem recomendada: [docs/documentos.md](docs/documentos.md).
 
@@ -60,7 +61,7 @@ Também publicada em [padilhars.github.io/vibe-docs/docs](https://padilhars.gith
 ├── vibe-docs/            ← a skill em si (é isto que vai para o .skill)
 │   ├── SKILL.md
 │   ├── references/       concept/ · blueprint/ · documents/
-│   ├── scripts/          6 verificadores em Python (sem dependências)
+│   ├── scripts/          6 verificadores em Python + módulo comum (sem dependências)
 │   └── assets/           project-template.md
 ├── docs/                 documentação (fonte do site; não vai no pacote)
 ├── site/                 página inicial e estilos do site
