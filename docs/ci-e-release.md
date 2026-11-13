@@ -36,7 +36,7 @@ Um zip cuja raiz é a pasta `vibe-docs/`. O build é determinístico (datas fixa
 
 ### Smoke test dos scripts
 
-O CI copia `assets/project-template.md` como `PROJECT.md` de um projeto vazio e roda cada script contra ele. Códigos 0 e 1 são resultados válidos (sem problema / problema encontrado). Qualquer outro código, ou uma exceção, falha o CI.
+O CI copia `assets/project-template.md` como `PROJECT.md` de um projeto vazio e roda cada script contra ele, em modo isolado (`python -I`). Nesse modo a pasta do script não entra no caminho de importação, então cada script a adiciona antes de importar `_common.py`. Códigos 0 e 1 são resultados válidos (sem problema / problema encontrado). Qualquer outro código, ou uma exceção, falha o CI.
 
 ## Publicando uma versão
 

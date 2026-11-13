@@ -11,5 +11,5 @@ labels: comportamento
 
 **O que você esperava**
 
-**Versão da skill:** <!-- ex.: v2.9 -->
+**Versão da skill:** <!-- ex.: v3.2 -->
 **Ambiente:** Claude.ai (com/sem execução de código) / Claude Code

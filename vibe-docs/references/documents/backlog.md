@@ -11,7 +11,7 @@ User Stories (se já geradas) ou funcionalidades diretamente, Plano de Desenvolv
 ```markdown
 # Backlog — [Nome do Projeto]
 
-## [Fase / Épico]
+## [Onda — do Plano de Desenvolvimento]
 
 - [ ] **TASK-xxx** — [descrição da tarefa, específica o suficiente para implementar sem perguntar de novo]
   - Origem: US-xxx / FUN-xx
@@ -30,7 +30,13 @@ Se, ao escrever o critério de pronto de uma tarefa, você perceber que só dá 
 
 ## Inserir tarefa num backlog existente
 
-Tarefa nova recebe o próximo `TASK-xxx` livre e é posicionada na onda/fase correta do documento — **nunca renumere as existentes para manter a sequência visual**. É tentador achar que a numeração deve refletir a ordem de execução, mas ela não precisa: a ordem vem da posição no documento e da onda, e o ID serve só para referenciar. Renumerar quebra toda referência cruzada que aponta para os números antigos, inclusive em outros documentos (Development Plan, User Stories) que a renumeração não alcança — e o erro é silencioso, porque os números continuam existindo, só apontando para a tarefa errada.
+Tarefa nova recebe o próximo `TASK-xxx` livre e é posicionada na onda correta do documento — **nunca renumere as existentes para manter a sequência visual**. É tentador achar que a numeração deve refletir a ordem de execução, mas ela não precisa: a ordem vem da posição no documento e da onda, e o ID serve só para referenciar. Renumerar quebra toda referência cruzada que aponta para os números antigos, inclusive em outros documentos (Development Plan, User Stories) que a renumeração não alcança — e o erro é silencioso, porque os números continuam existindo, só apontando para a tarefa errada.
+
+## O backlog é atualizado durante a implementação
+
+A caixa `[ ]` de cada tarefa é o registro de status do projeto: a rotina de fim de tarefa do `CLAUDE.md` manda marcá-la como `[x]` assim que a tarefa passa na verificação. Por isso este documento, diferente dos demais, continua mudando depois do handoff — e é ele, não o `STATE.md`, que vale quando os dois divergem.
+
+Bug encontrado na implementação não vira tarefa nova aqui por padrão: segue o protocolo de bug do `CLAUDE.md`. Só entra no backlog se a correção for grande o bastante para ser uma tarefa.
 
 ## Regras específicas
 - Uma tarefa deve ser implementável sem que quem a pega precise voltar ao Blueprint para entender o que fazer — se a descrição não é suficiente para isso, é sinal de que a tarefa está grande demais ou a informação de origem ainda é insuficiente.

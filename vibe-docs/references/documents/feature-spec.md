@@ -38,4 +38,4 @@ A funcionalidade em questão, os casos de uso que a envolvem, as regras de negó
 
 ## Regras específicas
 - Este documento é sobre comportamento, não sobre tela ou API — isso fica em `ux-spec.md` e `api-spec.md` respectivamente. Referencie-os em vez de duplicar conteúdo.
-- Se o usuário pedir a especificação de uma funcionalidade que não existe como `FUN-xx` no Blueprint, isso é sinal de que a funcionalidade precisa ser adicionada ao Blueprint primeiro (volta ao Modo 2), não que deve ser especificada direto aqui.
+- Se o usuário pedir a especificação de uma funcionalidade que não existe como `FUN-xx` no Blueprint, isso é sinal de que a funcionalidade precisa ser adicionada ao Blueprint primeiro (volta à etapa Blueprint), não que deve ser especificada direto aqui.

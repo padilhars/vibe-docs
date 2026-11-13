@@ -15,9 +15,10 @@ Arquitetura (stack, componentes, persistência), integrações externas (para sa
 [runtime e versão, banco de dados, ferramentas externas necessárias antes de qualquer coisa]
 
 ## Instalação
-```
-[passo a passo, em comandos executáveis]
-```
+[passo a passo, em comandos executáveis, num bloco de código]
+
+## Skills opcionais
+[só se `SKILLS-RECOMENDADAS.md` existir: uma linha apontando para ele. Nenhuma skill é instalada como parte do setup — a instalação é decisão do usuário]
 
 ## Variáveis de Ambiente
 
@@ -57,6 +58,10 @@ Para cada Princípio Não-Negociável (seção 20 do Blueprint) e para cada item
 | Formatação e lint | Verificação automática ao salvar ou no CI, não revisão manual |
 | Segredo nunca commitado | `.env` fora do versionamento e varredura de segredos no CI |
 | Princípio inviolável que tem teste correspondente | Esse teste roda junto com a suíte, não separado |
+| Tarefa só é dada como concluída com a verificação passando | Além da rotina de fim de tarefa do `CLAUDE.md`, um gancho do Claude Code que roda a verificação quando o agente termina de responder |
+| Bug corrigido não volta | O teste de regressão fica na suíte, que roda no CI |
+
+Sobre ganchos do Claude Code: eles são configurados em `.claude/settings.json` no repositório e disparam em eventos como o fim de uma resposta, o início de uma sessão ou depois de uma edição de arquivo. É o mecanismo certo para o que o `CLAUDE.md` só consegue pedir — mas o formato da configuração é do produto e muda. Se houver busca disponível, confira a documentação atual de hooks antes de escrever a configuração; sem busca, descreva o que o gancho deve fazer e deixe a configuração como pendência, em vez de escrever um formato de memória.
 
 Registre o que for aplicável numa seção "Verificações automáticas" do documento, com o comando real de cada uma. O que não der para automatizar continua sendo instrução no `CLAUDE.md` — mas a escolha deve ser consciente, não o padrão por omissão.
 

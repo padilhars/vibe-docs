@@ -1,7 +1,7 @@
 ---
 project: "[nome do projeto]"
-version: "0.1"
-status: "em concept"
+version: "1.0"
+status: "consolidado"
 idioma_documentacao: "pt-BR"
 last_updated: "[data]"
 ---
@@ -62,22 +62,24 @@ Fluxo principal                ❌ não discutido
 Casos de borda                 ❌ não discutido
 Permissões                     ❌ não discutido
 Requisitos não-funcionais      ❌ não discutido
+Regras de negócio              ❌ não discutido
+Integrações externas           ❌ não discutido
 Riscos / dados sensíveis       ❌ não discutido
 Testes e qualidade             ❌ não discutido
 ```
 
 ## 16. Pendências
 **Críticas:**
-- Tudo — este projeto ainda não passou pelo Concept.
+- PENDENTE
 
 **Menores:**
-- Nenhuma ainda.
+- PENDENTE
 
 ## 17. Sugestões Futuras (🔵)
 Nenhuma ainda.
 
 ## 18. Histórico de Decisões
-- [data] — Projeto criado a partir deste template.
+- [data] — Blueprint consolidado (v1.0).
 
 ## 19. Aprofundamento por Área
 

@@ -1,6 +1,6 @@
 ---
-name: "vibe-docs"
-description: Conduz um processo estruturado de descoberta e documentação de sistemas/produtos de software, para uso antes de desenvolvimento assistido por IA (vibe coding). Use sempre que o usuário apresentar um problema real com uma ideia de solução de sistema, app ou produto digital; pedir para iniciar, discutir ou refinar um projeto de software; pedir para consolidar um "blueprint" ou PROJECT.md; ou solicitar a geração de um documento de projeto — PRD, MVP, user stories, regras de negócio, casos de uso, UX spec, arquitetura, domain/data model, API, integrações, segurança, requisitos não-funcionais, plano de desenvolvimento, backlog ou contexto para Claude Code — a partir de um projeto já definido. Dispara mesmo sem esses termos exatos, como em "me ajuda a pensar num sistema pra X" ou "documenta isso pra eu jogar no Claude Code". Use também para alterar uma decisão já tomada e avaliar o impacto da mudança nos documentos existentes.
+name: vibe-docs
+description: Conduz um processo estruturado de descoberta e documentação de sistemas/produtos de software, para uso antes de desenvolvimento assistido por IA (vibe coding). Use sempre que o usuário apresentar um problema real com uma ideia de solução de sistema, app ou produto digital; pedir para iniciar, discutir ou refinar um projeto de software; pedir para consolidar um "blueprint" ou PROJECT.md; ou solicitar a geração de um documento de projeto — PRD, MVP, user stories, regras de negócio, casos de uso, UX spec, arquitetura, domain/data model, API, integrações, segurança, requisitos não-funcionais, plano de desenvolvimento, backlog ou contexto para Claude Code — a partir de um projeto já definido. Dispara mesmo sem esses termos exatos, como em "me ajuda a pensar num sistema pra X" ou "documenta isso pra eu jogar no Claude Code". Use também para alterar uma decisão já tomada e avaliar o impacto nos documentos existentes, e para simular o uso real do sistema em busca de falhas.
 compatibility: Funciona melhor com acesso a terminal (bash) e sistema de arquivos, usados pelos scripts de rastreabilidade em scripts/ e para persistir o PROJECT.md e os documentos derivados como arquivos reais. Sem isso, a skill ainda funciona em modo conversacional, mas a análise de impacto e a checagem de consistência ficam manuais.
 ---
 
@@ -45,9 +45,10 @@ Nunca gere `PROJECT.md` ou qualquer outro documento nesta etapa. O objetivo é a
 Quando o usuário sinalizar que quer consolidar, leia:
 - `references/blueprint/review-checklist.md` — o checkpoint 🟢🟡🔵🔴 (**obrigatório**, não pule mesmo se o usuário parecer com pressa — leva um parágrafo e evita retrabalho grande depois)
 - `references/blueprint/schema.md` — a estrutura exata do `PROJECT.md`
+- `references/blueprint/simulation.md` — simulação de uso real, rodada depois do checkpoint confirmado e antes de escrever o arquivo
 - `references/blueprint/maturity.md` — como reportar o estado do projeto (checklist qualitativo, não percentual)
 
-Depois do checkpoint, crie ou atualize o `PROJECT.md` na pasta do projeto (ver convenção de pastas no fim deste arquivo). Se o arquivo já existe, prefira editar as seções que mudaram a regenerar tudo — preserva histórico e reduz risco de perder algo que ainda era válido.
+A ordem é: checkpoint → confirmação do usuário → simulação de uso real → escrever o `PROJECT.md`. Na primeira consolidação, parta de `assets/project-template.md` e grave como versão `1.0` na pasta do projeto (ver "Layout do projeto"). Se o arquivo já existe, edite as seções que mudaram em vez de regenerar tudo — preserva histórico e reduz o risco de perder algo que ainda era válido. Ao terminar, entregue o arquivo (ver "Entrega e retomada").
 
 ## Etapa 3 — Files-Gen
 
@@ -74,8 +75,12 @@ Sempre leia `references/documents/_shared-rules.md` e `references/documents/deep
 | Backlog, tarefas de desenvolvimento, implementação | `references/documents/backlog.md` |
 | Estratégia de testes, plano de QA, "como testar isso" | `references/documents/test-strategy.md` |
 | Setup, ambiente, comandos, "como rodar o projeto" | `references/documents/setup-runbook.md` |
+| Skills que podem ajudar na implementação, "que skills instalar" | `references/documents/skills-recommendation.md` |
 | Estado da implementação, "onde paramos", retomar entre sessões | `references/documents/state.md` |
+| Aprendizados da implementação, memória entre sessões | `references/documents/learnings.md` |
 | CLAUDE.md, contexto para Claude Code, "IA de desenvolvimento", coding guidelines | `references/documents/claude-md.md` |
+
+`CLAUDE.md`, `STATE.md` e `LEARNINGS.md` são gerados juntos: o primeiro importa os outros dois e manda mantê-los a cada tarefa. Pedido de qualquer um dos três gera o trio.
 
 Se o pedido não bater claramente com uma linha da tabela, pergunte qual desses tipos mais se aproxima em vez de inventar uma estrutura nova — a lista já é ampla o suficiente pra cobrir a grande maioria dos pedidos reais.
 
@@ -85,11 +90,22 @@ O usuário pode pedir o mesmo mecanismo de `deepening.md` de forma proativa, ant
 
 ### Alterar uma decisão já tomada
 
-Ao concluir uma alteração, incremente a versão no frontmatter do `PROJECT.md` — é ela que o `check_staleness.py` usa para saber o que ficou para trás. Sem incrementar, documentos desatualizados passam por atuais.
+É uma reabertura pontual do Blueprint, não um novo Concept: não questione de novo decisões que não foram tocadas. Nesta ordem:
 
-**Escreva o plano de propagação antes de editar o primeiro arquivo.** Uma alteração de decisão num projeto maduro costuma atravessar dez ou mais documentos, e uma cascata feita de cabeça pode ser interrompida no meio — deixando metade dos arquivos numa versão e metade na outra, sem registro do que faltou. Liste os documentos e as seções afetadas (a partir do `find_references.py`), mostre a lista ao usuário, e vá marcando conforme aplica. A lista é o que permite retomar com segurança se algo interromper.
+1. **Identifique** o(s) ID(s) afetado(s) e rode `scripts/find_references.py <pasta> <ID>` para cada um.
+2. **Escreva o plano de propagação** — os documentos e seções afetados — e mostre ao usuário antes de editar qualquer arquivo. Uma alteração num projeto maduro costuma atravessar dez ou mais documentos, e uma cascata feita de cabeça pode ser interrompida no meio, deixando metade dos arquivos numa versão e metade na outra. A lista é o que permite retomar.
+3. **Simule de novo, se a alteração mudar a sequência do que um ator faz ou quem pode fazer o quê** — regra de negócio, fluxo, permissão ou estado (ver `references/blueprint/simulation.md`). Mudança que não altera sequência (nome de campo, número de NFR, redação) não precisa.
+4. **Atualize o `PROJECT.md`**: a decisão, uma linha na seção 18 e a versão, conforme "Quando a versão sobe" em `references/blueprint/schema.md`. Alterar o que estava decidido sobe; preencher o que estava `PENDENTE` não.
+5. **Propague** seguindo o plano e marcando cada item. Cada documento tocado passa pela rotina obrigatória de `_shared-rules.md`, e só recebe a versão nova depois de conferido.
+6. **Confira** com `scripts/check_staleness.py` e `scripts/check_coverage.py`: o primeiro mostra o que ficou para trás, o segundo o que nunca recebeu a decisão.
 
-Quando o usuário pedir para mudar algo já definido: identifique o(s) ID(s) afetado(s), rode `scripts/find_references.py` (ver seção de scripts abaixo) para localizar todos os documentos que citam esse ID, mostre o impacto ao usuário antes de editar qualquer coisa, e só depois atualize o `PROJECT.md` e ofereça atualizar os documentos derivados afetados. Isso é uma reabertura pontual do Blueprint, não um novo Concept completo — não questione novamente decisões que não foram tocadas.
+### Encerrar uma fase
+
+Quando o usuário disser que a fase atual terminou (o MVP está pronto, vamos para a fase 2): na seção 22 do `PROJECT.md`, mova a fase atual para "Fases concluídas" com a data, defina a nova fase, seu objetivo e suas funcionalidades com o usuário, e registre a transição na seção 18. Depois regenere o que depende da fase: Plano de Desenvolvimento, Backlog (as tarefas concluídas ficam; entram as ondas da fase nova, com IDs novos), os limites de escopo do `CLAUDE.md` e o cabeçalho do `STATE.md`. Mudar de fase muda o que o agente deve implementar, então sobe a versão.
+
+### Simular sob demanda
+
+O usuário pode pedir uma simulação a qualquer momento depois de o Blueprint existir — "que problemas podem ocorrer no uso diário", "o que pode dar errado no dia a dia", "simule o uso real", "como seria a primeira semana" — raramente com a palavra "simulação". Conduza seguindo `references/blueprint/simulation.md`, com a mesma postura de procurar quebrar em vez de narrar o caminho feliz. Diferente dos comandos de consulta abaixo, isso escreve no Blueprint: lacuna real e comportamento indefinido viram pendência ou regra, e a simulação é registrada na seção 18.
 
 ## Comandos de consulta
 
@@ -110,7 +126,7 @@ Além de conduzir as três etapas, a skill responde a pedidos de consulta a qual
 | "Revise tudo" / "está tudo coerente?" / "tem divergência entre os documentos?" | Rodar os quatro scripts de verificação (`check_coverage`, `check_traceability`, `check_staleness`, `handoff_check`), depois revisar manualmente o que eles não alcançam: seções 15 e 19 do Blueprint ainda marcando como pendente algo já resolvido, pendência resolvida cujo texto antigo não foi removido, e afirmação escrita como fato sem decisão por trás |
 | "Está pronto pro Claude Code?" / "posso começar a implementar?" | Rodar `scripts/handoff_check.py <pasta>` e reportar bloqueios e avisos |
 | "Que documentos estão desatualizados?" | Rodar `scripts/check_staleness.py <pasta>` |
-| "Em que fase o projeto está?" | Ler a seção 22 do `PROJECT.md` |
+| "Em que fase o projeto está?" | Ler a seção 22 do `PROJECT.md` (ou usar `project_status.py`) |
 | "Histórico de decisões?" | Ler a seção 18 do `PROJECT.md` |
 
 ## Comportamento de fallback
@@ -129,24 +145,48 @@ Além de conduzir as três etapas, a skill responde a pedidos de consulta a qual
 
 ## Scripts
 
-- `scripts/find_references.py <pasta-do-projeto> <ID>` — busca todas as ocorrências de um ID (ex.: `BR-04`) nos arquivos `.md` da pasta do projeto. Use antes de qualquer alteração de decisão, para saber o que será afetado.
-- `scripts/check_traceability.py <pasta-do-projeto>` — lê o `PROJECT.md` para montar o registro de IDs válidos, depois varre os demais documentos e aponta qualquer ID citado que não existe no Blueprint (possível invenção ou drift). Rode depois de gerar ou editar qualquer documento derivado, ou sob demanda quando o usuário pedir uma checagem.
-- `scripts/project_status.py <pasta-do-projeto>` — mostra quais documentos já foram gerados (comparando com os 20 tipos possíveis) e extrai as seções de Estado do Projeto, Pendências, Sugestões Futuras, Aprofundamento por Área, Princípios Não-Negociáveis e Definition of Done direto do `PROJECT.md`. Use para qualquer pedido de "como está o projeto".
-- `scripts/check_staleness.py <pasta-do-projeto>` — compara a versão do Blueprint com a que cada documento derivado declara no frontmatter e aponta o que ficou para trás. Rode depois de qualquer alteração de decisão, junto com `find_references.py`: um diz o que seria afetado, o outro diz o que de fato ficou desatualizado.
-- `scripts/check_coverage.py <pasta-do-projeto>` — verifica se toda `BR-xx` e `PRINC-xx` do Blueprint aparece nos documentos onde é obrigatória, e se toda funcionalidade do recorte do MVP consta no `MVP.md`. Pega o caso que o `check_staleness.py` não pega: documento gerado antes de uma decisão existir, que nenhuma cascata posterior alcançou.
-- `scripts/handoff_check.py <pasta-do-projeto>` — verificação pré-entrega: checa documentos essenciais, pendências críticas, seções 20 e 21 do Blueprint, e se os `@imports` do `CLAUDE.md` apontam para arquivos que existem. Rode sempre antes de o usuário levar o projeto para o Claude Code.
+Todos recebem a pasta que contém o `PROJECT.md` e funcionam nos dois momentos do layout (ver abaixo). `scripts/_common.py` é o módulo que eles compartilham, não um comando.
 
-## Convenção de pastas de um projeto
+| Script | O que faz | Quando rodar |
+|---|---|---|
+| `check_traceability.py <pasta>` | Aponta ID citado num documento derivado que o Blueprint não define | Depois de gerar ou editar qualquer documento (passo 5 da rotina) |
+| `check_coverage.py <pasta>` | Aponta `BR-xx`/`PRINC-xx` do Blueprint ausente de onde deveria constar, e funcionalidade do recorte ausente do `MVP.md` | Ao terminar um documento agregador (passo 5 da rotina) e ao fim de toda alteração de decisão |
+| `find_references.py <pasta> <ID>` | Lista onde um ID é citado, pelo ID inteiro | Antes de qualquer alteração de decisão, e sob consulta |
+| `check_staleness.py <pasta>` | Compara a versão do Blueprint com a de cada documento | Ao fim de toda alteração de decisão, e ao retomar um projeto |
+| `handoff_check.py <pasta>` | Verifica se o pacote está pronto para o Claude Code | Ao terminar o `CLAUDE.md`, e antes de o usuário levar o projeto para implementação |
+| `project_status.py <pasta>` | Mostra os documentos gerados e as seções de estado do Blueprint | Ao retomar um projeto, e em qualquer pedido de "como está o projeto" |
 
-Cada projeto vive na sua própria pasta, com o Blueprint e os documentos derivados como arquivos reais lado a lado:
+## Layout do projeto
+
+**Durante a documentação**, tudo fica numa pasta só — é onde os scripts rodam:
 
 ```
 projects/<nome-do-projeto>/
 ├── PROJECT.md
-├── PRD.md
-├── MVP.md
-├── ...
-└── CLAUDE-CODE-CONTEXT.md
+├── PRD.md, MVP.md, ARCHITECTURE.md, ...
+├── STATE.md
+├── LEARNINGS.md
+└── CLAUDE.md
 ```
 
-Ao iniciar um projeto novo em Concept, use `assets/project-template.md` como esqueleto inicial do `PROJECT.md` em vez de montar a estrutura do zero.
+**No handoff**, o conteúdo vai para o repositório de código assim:
+
+```
+<repositório>/
+├── CLAUDE.md          ← raiz: é onde o Claude Code o carrega
+└── docs/
+    ├── PROJECT.md
+    ├── ...todos os outros documentos
+    ├── STATE.md
+    └── LEARNINGS.md
+```
+
+O `CLAUDE.md` já é gerado com os caminhos finais (`docs/...`). Depois do handoff, os scripts são rodados sobre `docs/` e encontram o `CLAUDE.md` na pasta acima. Ao entregar, diga ao usuário onde cada coisa vai — é o único passo manual do processo.
+
+## Entrega e retomada
+
+O ambiente em que a skill roda pode ser temporário: arquivos que só existem na pasta de trabalho podem não estar lá na conversa seguinte, ou sumir no meio de uma conversa longa.
+
+- **Entregue cada arquivo assim que ele ficar pronto**, não em lote no fim. A partir do terceiro documento, entregue também a pasta do projeto compactada a cada rodada que mudar mais de um arquivo — é o que o usuário guarda e o que ele devolve para continuar.
+- **Para retomar um projeto** em outra conversa, peça a pasta inteira (ou o arquivo compactado), não só o `PROJECT.md`: os scripts e a propagação de alterações precisam de todos os documentos. Com a pasta em mãos, rode `project_status.py` e `check_staleness.py` antes de qualquer outra coisa e diga ao usuário o que encontrou.
+- **Se o usuário trouxer só o `PROJECT.md`**, dá para gerar documentos novos, mas avise que os já existentes não serão conferidos nem atualizados.

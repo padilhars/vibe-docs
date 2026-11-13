@@ -1,5 +1,50 @@
 # Changelog — Vibe-Docs
 
+## v3.2
+Revisão completa da skill (leitura de todos os arquivos, execução dos scripts e simulação de uso de ponta a ponta num projeto fictício), mais três funcionalidades novas.
+
+**Correções críticas**
+- **`CLAUDE.md` deixa de importar a documentação inteira.** O template usava `@ARQUIVO.md` para sete documentos e para o Blueprint, supondo que o agente os abriria quando precisasse; no Claude Code, arquivo importado com `@` é carregado inteiro em toda sessão. Agora só `STATE.md` e `LEARNINGS.md` são importados; os demais são citados pelo caminho, com a situação em que devem ser lidos. `handoff_check.py` avisa sobre import indevido.
+- **Comparação de IDs pelo ID inteiro.** `check_coverage.py` dava "cobertura completa" com a BR-10 ausente se o documento citasse BR-100, e `find_references.py` devolvia TASK-010 na busca por TASK-01.
+- **A seção 22 (Fase Atual) ganhou quem a preencha**: nasce na consolidação, é completada pelo `MVP.md` e muda pelo procedimento "Encerrar uma fase". Antes tinha três leitores e nenhum escritor, e `handoff_check.py` não a verificava.
+- **Regra de quando a versão do Blueprint sobe**: só ao alterar ou acrescentar decisão, não ao preencher o que estava PENDENTE. Antes, gerar o terceiro documento já marcava os dois primeiros como desatualizados.
+- **Layout do projeto definido**, antes e depois do handoff (`CLAUDE.md` na raiz, o restante em `docs/`), com os scripts funcionando nos dois.
+
+**Correções médias**
+- `schema.md`: bloco de código mal fechado deixava as seções 20 e 21 dentro de um bloco.
+- Fim da contradição sobre o `PROJECT.md` durante o Concept: o arquivo só nasce na consolidação, como versão 1.0.
+- Marcadores do template (`- BR-01: PENDENTE`) não contam mais como IDs definidos.
+- Pendências críticas lidas em qualquer formato de lista; `schema.md` e template passaram a usar o mesmo formato.
+- `STATE.md` e `LEARNINGS.md` fora da comparação de versões.
+- Os scripts funcionam também em modo isolado (`python -I`, usado no CI), em que a pasta do script não entra no caminho de importação e o módulo comum não seria encontrado.
+- Fluxo "Alterar uma decisão" reescrito em passos na ordem certa; checkpoint completo fica só para consolidação.
+- `check_traceability.py` passou a ter gatilho na rotina obrigatória; `check_staleness.py`, no fim de toda alteração e na retomada.
+- "Fase" (de produto, seção 22) e "onda" (de construção, plano e backlog) deixaram de ser o mesmo termo.
+- Nova seção "Entrega e retomada": entregar cada arquivo assim que fica pronto e como continuar um projeto em outra conversa.
+
+**Correções menores**
+- Exemplo de pasta, contagens de tipos de documento, "Duas verificações" que eram três, referência a seção inexistente, termo "Modo 3", categorias de maturidade divergentes entre template e `maturity.md`, Data Model tratado como essencial no texto e recomendado no script, padrões de ID diferentes entre scripts (agora em `scripts/_common.py`), bloco de código aninhado no template do runbook, simulação anterior ao primeiro Blueprint sem versão a registrar.
+
+**Funcionalidades novas**
+- **Rotina de fim de tarefa e protocolo de bug**, fixos em todo `CLAUDE.md`: verificar, conferir a Definition of Done, marcar no backlog, atualizar estado e aprendizados, commit — a cada tarefa, não ao fim da sessão; e, para bugs, teste que reproduz antes da correção, mantido na suíte. O Test Strategy ganhou a seção de testes de regressão e o runbook, a orientação de garantir a verificação por gancho ou CI.
+- **`LEARNINGS.md`** (`references/documents/learnings.md`): aprendizados da implementação versionados no repositório, curados e limitados a 100 linhas, complementares à memória automática do Claude Code.
+- **`SKILLS-RECOMENDADAS.md`** (`references/documents/skills-recommendation.md`): até cinco skills gratuitas verificadas por pesquisa, com origem, licença, o que acessam, sobreposição com o `CLAUDE.md` e o pedido de instalação pronto. Nada é instalado sem aprovação do usuário, e o documento não é gerado de memória.
+
+## v3.1
+Calibração da simulação contra o primeiro uso real (sistema financeiro pessoal com bot, importação de fatura e integração de agenda). Dos 14 achados daquela sessão, os 7 cenários da v3.0 cobriam 1 bem e 2 parcialmente — estavam enviesados para CRUD com atores humanos em tela, que é o que os três projetos de referência anteriores eram.
+- **Cenários reorganizados em duas camadas**: universais (agora 8, com "a mesma realidade entrando por dois caminhos", que pega dupla contagem) e condicionais por característica do sistema. As condicionais cobrem o que faltava: entrada em linguagem livre (ambígua, incompleta, múltipla, referencial), importação de dado externo (linha que o modelo não previu, reenvio, extração parcial, entidade desconhecida), dependência de serviço externo (falha silenciosa e indisponibilidade), acúmulo ao longo do tempo (proliferação de dado mestre), período de competência e efeito agregado de notificações.
+- **O cenário do dia 0 ganhou a parte que mais rendeu no teste**: todo cálculo que depende de histórico precisa ter resposta para antes de existir histórico.
+- **Formato de relato**, copiado do que funcionou: agrupar por natureza em vez de listar solto, separar o que exige decisão do que é correção direta, exemplo concreto em cada achado, correção proposta junto do apontamento, alternativa quando há outro caminho razoável, e fechar com o próximo passo.
+- **Achado de simulação não entra automaticamente no MVP** — passa pelo corte como qualquer funcionalidade, senão a primeira versão fica grande por acúmulo de correção.
+- **Gatilhos em linguagem real**: o pedido raramente usa a palavra "simulação"; no uso real veio como "problemas que podem ocorrer no uso diário".
+
+## v3.0
+- **Simulação de uso real** (`blueprint/simulation.md`), rodada depois do checkpoint e antes de consolidar o Blueprint, antes de definir o MVP, e sob demanda. Primeira verificação **dinâmica** da skill: todas as outras são estáticas (categorizar o que foi discutido, conferir presença de ID, reler cada documento por dentro), e nenhuma delas executa o sistema no tempo. Narrar atores concretos agindo em sequência pega a classe de defeito que leitura não pega — sistema vazio no dia 1, ator que faz na ordem errada, abandono no meio, operação do administrador que ninguém previu. A falha mais custosa dos nossos testes era exatamente dessa classe: "não existe caminho para criar a conta da secretária" só apareceu com o Backlog sendo escrito, depois de API Spec e User Stories prontos.
+- **Postura adversarial obrigatória**: simulação que narra o caminho feliz e conclui "funciona bem" cria confiança falsa, então a instrução exige simular procurando quebrar — e relatar explicitamente quando não achou nada, porque silêncio depois de uma simulação é ambíguo.
+- **Quatro destinos para os achados**, separando o que é lacuna real (vira pendência ou regra), comportamento indefinido (vira pergunta agora), risco operacional (§14) e mera preferência (🔵 §17) — sem essa separação a simulação viraria máquina de inflar escopo.
+- **Gatilho estreito de re-simulação**: só quando a alteração mexe em regra, fluxo, permissão ou estado, isto é, quando muda a sequência do que um ator faz. Mudança de nome de campo ou número de NFR não dispara — verificação que dispara sempre vira ruído que se aprende a pular.
+- Cada simulação é registrada na seção 18 com a versão sobre a qual rodou; nenhum arquivo novo é gerado, porque um registro narrativo ficaria obsoleto na primeira mudança de regra.
+
 ## v2.9
 - **Pesquisa de sistemas existentes no Concept** (`concept/prior-art.md`), nas rodadas do meio. Enquadrada deliberadamente como descoberta de **problemas que o domínio exige resolver** — no-show, webhook que não chega, limite de janela de API, exigência regulatória — e não como catálogo de funcionalidades de concorrente: o resultado vira pergunta, nunca funcionalidade adicionada por conta própria. Achado não decidido explicitamente pelo usuário entra como 🔵 Sugestão futura no checkpoint.
 - Três guardrails junto: a pesquisa nunca vira avaliação de mercado ou de viabilidade (`propositions.md`); respeita a proporcionalidade, pulando projetos pequenos; e distingue sempre "encontrei pesquisando agora" de "é conhecimento meu, que pode estar desatualizado" — distinção motivada por um caso real em que a skill afirmou que não existia API oficial de consulta a registro profissional e o usuário mostrou que existia.

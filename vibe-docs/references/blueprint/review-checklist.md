@@ -2,7 +2,7 @@
 
 ## Por que isso não é opcional
 
-Consolidar o Blueprint sem esse passo é o momento em que mais informação se perde silenciosamente — proposições que ninguém decidiu viram "definidas" por omissão, ou pendências reais somem porque a conversa seguiu em frente. O checkpoint custa um parágrafo e evita descobrir um buraco no meio da geração de um documento importante. Rode este checkpoint **antes de toda consolidação inicial e antes de toda alteração de decisão em um projeto já consolidado** — não só na primeira vez.
+Consolidar o Blueprint sem esse passo é o momento em que mais informação se perde silenciosamente — proposições que ninguém decidiu viram "definidas" por omissão, ou pendências reais somem porque a conversa seguiu em frente. O checkpoint custa um parágrafo e evita descobrir um buraco no meio da geração de um documento importante. Rode este checkpoint **antes de toda consolidação** — a inicial e qualquer reconsolidação depois de uma nova rodada de Concept. Numa alteração pontual de decisão, o equivalente é o plano de propagação confirmado pelo usuário (ver "Alterar uma decisão já tomada" no `SKILL.md`).
 
 ## O formato
 
@@ -29,14 +29,27 @@ Organize tudo que foi discutido em quatro categorias e apresente ao usuário ant
 - **🔵 Sugestões futuras**: inclui todo achado de pesquisa (`concept/prior-art.md`) que o usuário não decidiu explicitamente — pesquisa revela possibilidade, não decisão. Nunca descarte silenciosamente — mesmo que pareça óbvio que o usuário não quis aquilo, registre para se decidir depois.
 - **🔴 Inconsistências**: explique o conflito em uma frase e pergunte qual versão deve prevalecer. Não resolva por conta própria escolhendo a que parece mais razoável.
 
-## Duas verificações rápidas antes de escrever o Blueprint
+## Três verificações rápidas antes de escrever o Blueprint
 
-Independente das quatro categorias acima, confira estes dois pontos — são os que mais passam batido e os mais caros de corrigir depois:
+Independente das quatro categorias acima, confira estes três pontos — são os que mais passam batido e os mais caros de corrigir depois:
 
-1. **Toda permissão tem uma identidade que a sustente?** Se a matriz de permissões distingue o que um ator pode fazer com o próprio registro versus o de outro, mas nunca foi dito como o sistema diferencia um ator do outro, isso é uma lacuna a resolver agora (ver `references/concept/questioning.md`).
+1. **Toda permissão tem uma identidade que a sustente?** Se a matriz de permissões distingue o que um ator pode fazer com o próprio registro versus o de outro, mas nunca foi dito como o sistema diferencia um ator do outro, isso é uma lacuna a resolver agora (ver `concept/questioning.md`).
 2. **Todo ator tem um caminho de criação definido?** Para cada ator da seção 5, pergunte como a conta dele passa a existir. É comum o ator principal ter um cadastro bem desenhado enquanto os internos (secretária, operador, admin) nunca ganham um — e a falta só aparece muito depois, quando alguém tenta montar o backlog e descobre que não há como criar o primeiro usuário. Isso vale também para o primeiro admin, que normalmente precisa de seed, não de tela.
 3. **Toda funcionalidade serve a algum objetivo?** Se alguma `FUN-xx` não se liga a nenhum `OBJ-xx`, ou o escopo esticou, ou falta registrar um objetivo. Levante o ponto — é o que evita um MVP sem critério de corte depois.
 
 ## Depois de apresentar o checkpoint
 
-Se houver pendência crítica ou inconsistência, pergunte diretamente se o usuário quer resolvê-la agora ou consolidar mesmo assim (nesse caso, ela vira uma pendência crítica registrada na seção 16 do `PROJECT.md`, não um vazio silencioso). Só escreva ou atualize o `PROJECT.md` depois que o usuário confirmar que o checkpoint está correto.
+Se houver pendência crítica ou inconsistência, pergunte diretamente se o usuário quer resolvê-la agora ou consolidar mesmo assim (nesse caso, ela vira uma pendência crítica registrada na seção 16 do `PROJECT.md`, não um vazio silencioso). Só siga adiante depois que o usuário confirmar que o checkpoint está correto.
+
+## Simule antes de consolidar
+
+Com o checkpoint confirmado, e antes de escrever o `PROJECT.md`, rode uma simulação de uso real seguindo `simulation.md`. O checkpoint verifica se o que foi discutido está categorizado corretamente; a simulação verifica se o sistema **funciona quando alguém usa**, o que é outra pergunta — e é a que pega lacuna de sequência, estado vazio e operação que ninguém previu.
+
+É o momento de maior retorno: o entendimento já está completo e nenhum documento derivado existe ainda, então corrigir custa uma frase em vez de uma cascata.
+
+## A sequência inteira
+
+1. Apresentar o checkpoint 🟢🟡🔵🔴 e as três verificações rápidas.
+2. O usuário confirma ou corrige.
+3. Rodar a simulação de uso real e resolver com o usuário o que ela achar.
+4. Só então escrever o `PROJECT.md` a partir de `assets/project-template.md`, já com tudo acima incorporado, e entregar o arquivo.

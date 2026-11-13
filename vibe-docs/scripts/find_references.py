@@ -2,9 +2,10 @@
 """
 find_references.py — Análise de impacto por ID de rastreabilidade.
 
-Busca todas as ocorrências de um ID (ex.: BR-04, UC-02, ENT-01) nos arquivos
-.md de uma pasta de projeto, para saber quais documentos são afetados antes
-de alterar uma decisão já consolidada no PROJECT.md.
+Busca todas as ocorrências de um ID (ex.: BR-04, UC-02, ENT-01) nos documentos
+de um projeto, para saber quais são afetados antes de alterar uma decisão já
+consolidada no PROJECT.md. A busca é pelo ID inteiro: TASK-01 não devolve
+ocorrências de TASK-010.
 
 Uso:
     python find_references.py <pasta-do-projeto> <ID>
@@ -13,30 +14,27 @@ Exemplo:
     python find_references.py projects/sistema-gestao-salas BR-04
 """
 
+import re
 import sys
 from pathlib import Path
 
+# Garante o import de _common mesmo em modo isolado (python -I), que tira a
+# pasta do script do sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from _common import project_files, read
+
 
 def find_references(project_dir: Path, target_id: str):
-    """Retorna uma lista de (arquivo, num_linha, texto_da_linha) para cada ocorrência do ID."""
+    """Lista de (arquivo, num_linha, texto_da_linha) para cada ocorrência do ID inteiro."""
+    whole = re.compile(rf"(?<![A-Za-z0-9-]){re.escape(target_id)}(?!\d)")
+    files = project_files(project_dir)
     matches = []
-    md_files = sorted(project_dir.rglob("*.md"))
-
-    if not md_files:
-        return matches, []
-
-    for md_file in md_files:
-        try:
-            lines = md_file.read_text(encoding="utf-8", errors="replace").splitlines()
-        except Exception as e:
-            print(f"⚠️  Não foi possível ler {md_file}: {e}", file=sys.stderr)
-            continue
-
-        for i, line in enumerate(lines, start=1):
-            if target_id in line:
-                matches.append((md_file, i, line.strip()))
-
-    return matches, md_files
+    for name in sorted(files):
+        for i, line in enumerate(read(files[name]).splitlines(), start=1):
+            if whole.search(line):
+                matches.append((name, i, line.strip()))
+    return matches, files
 
 
 def main():
@@ -52,28 +50,28 @@ def main():
         print(f"❌ Pasta de projeto não encontrada: {project_dir}")
         sys.exit(1)
 
-    matches, md_files = find_references(project_dir, target_id)
+    matches, files = find_references(project_dir, target_id)
 
-    if not md_files:
-        print(f"❌ Nenhum arquivo .md encontrado em {project_dir}")
+    if not files:
+        print(f"❌ Nenhum documento .md encontrado em {project_dir}")
         sys.exit(1)
 
     if not matches:
-        print(f"Nenhuma ocorrência de '{target_id}' encontrada em {len(md_files)} arquivo(s) .md em {project_dir}.")
-        print("Isso pode significar que o ID não existe, foi digitado de forma diferente, ou de fato não é referenciado em nenhum documento derivado ainda.")
+        print(f"Nenhuma ocorrência de '{target_id}' em {len(files)} documento(s) de {project_dir}.")
+        print("O ID pode não existir, ter sido digitado de forma diferente, ou ainda não ser citado em nenhum documento.")
         sys.exit(0)
 
-    files_affected = sorted({m[0] for m in matches})
-    print(f"'{target_id}' encontrado em {len(files_affected)} arquivo(s), {len(matches)} ocorrência(s) no total:\n")
+    affected = sorted({m[0] for m in matches})
+    print(f"'{target_id}' encontrado em {len(affected)} documento(s), {len(matches)} ocorrência(s) no total:")
 
-    current_file = None
-    for file_path, line_num, line_text in matches:
-        if file_path != current_file:
-            current_file = file_path
-            print(f"\n📄 {file_path.relative_to(project_dir.parent) if project_dir.parent in file_path.parents else file_path}")
+    current = None
+    for name, line_num, line_text in matches:
+        if name != current:
+            current = name
+            print(f"\n📄 {name}")
         print(f"   L{line_num}: {line_text}")
 
-    print(f"\n→ {len(files_affected)} arquivo(s) provavelmente precisam de revisão antes de finalizar esta alteração.")
+    print(f"\n→ {len(affected)} documento(s) entram no plano de propagação desta alteração.")
 
 
 if __name__ == "__main__":

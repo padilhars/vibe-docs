@@ -29,7 +29,7 @@
 
 Enviar uma tag `vX.Y` à mão também funciona, e o workflow pode ser disparado manualmente na aba Actions.
 
-Versionamento: incremente o **menor** (`v2.9 → v2.10`) para ajustes e novos documentos, e o **maior** (`v2.x → v3.0`) quando mudar a estrutura do `PROJECT.md` de forma que blueprints antigos precisem de adaptação.
+Versionamento: incremente o **menor** (`v3.2 → v3.3`) para ajustes e novos documentos, e o **maior** (`v3.x → v4.0`) quando mudar a estrutura do `PROJECT.md` ou o comportamento de forma que projetos em andamento precisem de adaptação.
 
 ## Reportando problemas
 

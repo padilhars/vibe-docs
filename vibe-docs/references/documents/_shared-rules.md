@@ -8,7 +8,7 @@ O Concept respondeu "o que estamos construindo e por quê". O Blueprint consolid
 
 ## Antes de escrever: verifique lacunas e dependências
 
-Antes de começar a escrever qualquer seção, veja `references/documents/deepening.md` — ele descreve a ordem certa pra checar se uma informação que falta já foi decidida em outro documento ou no Blueprint antes de tratar como lacuna nova, e o que fazer quando a lacuna for pequena (resolve na hora, com palpite embutido) ou grande demais pra resolver picotada (para e oferece escolha). Isso vale pra todo documento, mesmo que na maioria das vezes não encontre nada faltando.
+Antes de começar a escrever qualquer seção, veja `deepening.md` — ele descreve a ordem certa pra checar se uma informação que falta já foi decidida em outro documento ou no Blueprint antes de tratar como lacuna nova, e o que fazer quando a lacuna for pequena (resolve na hora, com palpite embutido) ou grande demais pra resolver picotada (para e oferece escolha). Isso vale pra todo documento, mesmo que na maioria das vezes não encontre nada faltando.
 
 ## Princípios não-negociáveis sempre vencem
 
@@ -43,21 +43,24 @@ OBJ-01 → FUN-03 → UC-05 → BR-07 → ENT-04 → REQ-12
 
 **IDs são append-only.** Nunca renumere um identificador existente para abrir espaço ou manter ordem — nem os do Blueprint, nem os locais do documento (`US-xxx`, `TASK-xxx`). Item novo recebe o próximo número livre e é posicionado no lugar certo do documento; a ordem de execução vem da posição e da onda/fase, nunca do valor numérico do ID. Renumerar parece organizado e quebra toda referência cruzada que aponta para os números antigos — inclusive em outros documentos, que a renumeração não alcança.
 
-Prefixos padrão: `OBJ` (objetivo), `FUN` (funcionalidade), `UC` (caso de uso), `BR` (regra de negócio), `ENT` (entidade), `REQ` (requisito técnico), `PRINC` (princípio não-negociável), `US` (user story), `TASK` (tarefa de backlog), `API` (endpoint). Não invente prefixo novo: se algo não se encaixa em nenhum destes, provavelmente pertence a uma categoria que já existe. IDs que já existem no Blueprint devem ser reutilizados exatamente como estão — nunca renumerados ou reformulados num documento derivado. Depois de gerar ou editar um documento, rode `scripts/check_traceability.py` para confirmar que nenhum ID citado é inexistente no Blueprint.
+Prefixos padrão: `OBJ` (objetivo), `FUN` (funcionalidade), `UC` (caso de uso), `BR` (regra de negócio), `ENT` (entidade), `REQ` (requisito técnico), `PRINC` (princípio não-negociável), `US` (user story), `TASK` (tarefa de backlog), `API` (endpoint). Não invente prefixo novo: se algo não se encaixa em nenhum destes, provavelmente pertence a uma categoria que já existe. IDs que já existem no Blueprint devem ser reutilizados exatamente como estão — nunca renumerados ou reformulados num documento derivado. Depois de gerar ou editar um documento, rode `scripts/check_traceability.py` — é o passo 5 da rotina obrigatória, abaixo.
 
 ## Nome do arquivo
 
-Salve cada documento gerado na pasta do projeto com o nome padrão em maiúsculas correspondente ao tipo: `PRD.md`, `MVP.md`, `USE-CASE-SPEC.md`, `ARCHITECTURE.md`, e assim por diante — o mesmo nome do arquivo de referência em `references/documents/`, só que em maiúsculo. Para tipos que podem ter mais de uma instância no mesmo projeto (Feature Spec, Process Spec), acrescente um sufixo que identifique qual: `FEATURE-SPEC-FUN-03.md`. Uma exceção importante: o contrato do agente é salvo exatamente como `CLAUDE.md` — não é escolha de convenção nossa, é o nome que o Claude Code carrega automaticamente (ver `claude-md.md`). Essa convenção é o que permite que `scripts/project_status.py` reconheça o que já foi gerado sem precisar perguntar.
+Salve cada documento gerado na pasta do projeto com o nome padrão em maiúsculas correspondente ao tipo: `PRD.md`, `MVP.md`, `USE-CASE-SPEC.md`, `ARCHITECTURE.md`, e assim por diante — o mesmo nome do arquivo de referência em `references/documents/`, só que em maiúsculo. Para tipos que podem ter mais de uma instância no mesmo projeto (Feature Spec, Process Spec), acrescente um sufixo que identifique qual: `FEATURE-SPEC-FUN-03.md`. Uma exceção importante: o contrato do agente é salvo exatamente como `CLAUDE.md` — não é escolha de convenção nossa, é o nome que o Claude Code carrega automaticamente (ver `claude-md.md`). Todos os documentos são gerados na mesma pasta; a separação entre raiz do repositório e `docs/` acontece no handoff (ver "Layout do projeto" no `SKILL.md`). Essa convenção é o que permite que `scripts/project_status.py` reconheça o que já foi gerado sem precisar perguntar.
 
 ## Metadados obrigatórios
 
-Todo documento gerado começa com o bloco abaixo — **com uma exceção: o `CLAUDE.md` não leva frontmatter algum.** Ele é o único documento carregado automaticamente por uma ferramenta, e cada linha que não muda o comportamento do agente é context window desperdiçada. Metadados ali são ruído (ver `claude-md.md`).
+Todo documento derivado começa com o bloco abaixo. **Três arquivos não levam frontmatter algum:**
+
+- `CLAUDE.md` — é carregado inteiro pelo Claude Code em toda sessão, e cada linha que não muda o comportamento do agente é contexto desperdiçado (ver `claude-md.md`).
+- `STATE.md` e `LEARNINGS.md` — são mantidos pelo agente de implementação, não derivados de uma versão do Blueprint, e são importados pelo `CLAUDE.md` (ver `state.md` e `learnings.md`).
 
 ```yaml
 ---
 document_type: "[tipo]"
 project: "[nome]"
-version: "[versão do PROJECT.md usado como fonte]"
+version: "[versão do PROJECT.md contra a qual este documento foi conferido]"
 status: "[rascunho | completo | completo com pendências]"
 source: "PROJECT.md"
 generated_at: "[data]"
@@ -90,17 +93,19 @@ Estes passos fazem parte de gerar o documento, não são revisão opcional feita
 
 **1. Revisão crítica antes de entregar.** Releia procurando ativamente: seção referenciada em outro lugar mas nunca especificada; ator, funcionalidade ou regra que o documento deveria cobrir e não cobre; afirmação escrita como fato sem ter sido decidida em lugar nenhum; referência cruzada apontando para o ID errado. Relate o que encontrar junto com o documento, com a correção ou a pergunta — nunca entregue em silêncio esperando que o usuário desconfie e pergunte. Se não encontrar nada, diga isso explicitamente; silêncio é ambíguo.
 
-**2. Atualize as seções de estado do Blueprint.** A área correspondente da seção 19 deixa de ser `PENDENTE` e passa a apontar para o documento e registrar as decisões tomadas (ver `deepening.md`). A categoria correspondente da seção 15 (Estado do Projeto) deixa de ser ❌ e vira ✅. Essas duas seções descrevem o estado atual do projeto: mantê-las desatualizadas faz o Blueprint mentir sobre si mesmo, e ninguém percebe porque cada documento isolado continua correto.
+**2. Atualize as seções de estado do Blueprint.** A área correspondente da seção 19 deixa de ser `PENDENTE` e passa a apontar para o documento e registrar as decisões tomadas (ver `deepening.md`). Quando o documento cobre uma categoria da seção 15 (Estado do Projeto) — NFR → Requisitos não-funcionais, Test Strategy → Testes e qualidade, Integration Spec → Integrações externas, Security Spec → Riscos / dados sensíveis — ela deixa de ser ❌. Nem todo documento tem categoria correspondente, e tudo bem. Nada disso sobe a versão do Blueprint (ver "Quando a versão sobe" em `blueprint/schema.md`). Essas duas seções descrevem o estado atual do projeto: mantê-las desatualizadas faz o Blueprint mentir sobre si mesmo, e ninguém percebe porque cada documento isolado continua correto.
 
 **3. Remova a formulação antiga de toda pendência resolvida.** Resolver não é só acrescentar a resposta: é procurar onde o texto ainda diz que aquilo está em aberto e apagar. Documento que decide algo num parágrafo e diz "ainda não foi decidido" em outro é pior que documento incompleto, porque quem lê o trecho errado age com informação falsa.
 
 **4. Confira toda lista de pendências contra o estado atual.** Nunca copie pendência de outro documento nem repita a que você mesmo escreveu antes sem reverificar — várias já podem ter sido resolvidas em rodadas seguintes.
 
-**5. Ao terminar um documento agregador, rode `scripts/check_coverage.py`.** São quatro: `BUSINESS-RULES.md`, `TEST-STRATEGY.md`, `MVP.md` e `CLAUDE.md` — os que precisam refletir decisões espalhadas por todo o Blueprint, e onde uma ausência não aparece na leitura do próprio documento (ele parece completo; o que falta é justamente o que não está lá). Nos demais documentos o script é opcional.
+**5. Rode os scripts.** `scripts/check_traceability.py` sempre, depois de qualquer documento — confirma que nenhum ID citado foi inventado. `scripts/check_coverage.py` também, ao terminar um documento agregador: `BUSINESS-RULES.md`, `TEST-STRATEGY.md`, `MVP.md` e `CLAUDE.md`, que precisam refletir decisões espalhadas por todo o Blueprint e onde uma ausência não aparece na leitura (o documento parece completo; o que falta é justamente o que não está lá). Resolva o que apontarem antes de entregar.
 
 Este passo existe porque script listado não é script executado: a experiência mostra que uma ferramenta só amarrada a "quando o usuário pedir" pode atravessar um projeto inteiro sem ser chamada uma única vez. Amarrar a um momento do fluxo é o que faz a verificação acontecer.
 
-**6. Só então suba a versão.** Ver a seção seguinte.
+**6. Só então registre a versão.** O campo `version` do documento recebe a versão atual do Blueprint. Ver a seção seguinte.
+
+**7. Entregue o arquivo ao usuário.** O ambiente em que a skill roda pode ser temporário: um documento que só existe na pasta de trabalho pode se perder. Ver "Entrega e retomada" no `SKILL.md`.
 
 ## Sincronizar versão não é revisar
 
@@ -121,6 +126,10 @@ Ao revisar um documento, trate cortar como uma possibilidade legítima, não com
 - Aviso que nunca mudou comportamento nenhum: sai.
 
 Ao fim de uma fase, ou quando o usuário pedir uma auditoria, inclua no relatório o que vale cortar — não só o que falta acrescentar.
+
+## Fase e onda
+
+Dois termos, dois significados, em todos os documentos: **fase** é a fase de produto registrada na seção 22 do Blueprint (MVP, Fase 2...); **onda** é a subdivisão de construção dentro de uma fase (Plano de Desenvolvimento, Backlog, `STATE.md`). Não use "fase" para as ondas.
 
 ## A hierarquia nunca se inverte
 

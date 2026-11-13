@@ -2,7 +2,7 @@
 
 ## Papel deste documento
 
-Esta é a estrutura obrigatória do `PROJECT.md`. Ela existe para que qualquer documento derivado (Modo 3) saiba exatamente onde procurar cada tipo de informação, sem depender de reler a conversa de Concept inteira. Preencha cada seção com o que foi decidido; quando algo ficar em aberto, escreva `PENDENTE` explicitamente em vez de omitir a seção.
+Esta é a estrutura obrigatória do `PROJECT.md`. Ela existe para que qualquer documento derivado (etapa Files-Gen) saiba exatamente onde procurar cada tipo de informação, sem depender de reler a conversa de Concept inteira. Preencha cada seção com o que foi decidido; quando algo ficar em aberto, escreva `PENDENTE` explicitamente em vez de omitir a seção.
 
 ## Proporcionalidade
 
@@ -15,12 +15,25 @@ Calibre pelo tamanho real do projeto: em algo pequeno, várias seções vão ser
 ```yaml
 ---
 project: "[nome do projeto]"
-version: "[incrementa a cada consolidação relevante]"
-status: "[em concept | consolidado | em evolução]"
+version: "[1.0 na primeira consolidação; depois, ver 'Quando a versão sobe']"
+status: "[consolidado | em evolução]"
 idioma_documentacao: "[pt-BR | en | outro — usado por todos os documentos derivados]"
 last_updated: "[data]"
 ---
 ```
+
+O arquivo só passa a existir na consolidação — durante o Concept não há `PROJECT.md` (ver `SKILL.md`). A primeira consolidação é a versão `1.0`.
+
+### Quando a versão sobe
+
+A versão existe para uma coisa: permitir que `scripts/check_staleness.py` diga quais documentos já gerados podem estar sem uma decisão. Por isso ela só sobe quando muda algo em que um documento já gerado poderia ter se apoiado:
+
+- **Sobe** ao alterar ou remover o que já estava decidido, e ao acrescentar regra, funcionalidade, ator, entidade, estado, permissão ou princípio.
+- **Não sobe** ao preencher o que estava `PENDENTE` pela primeira vez: uma área da seção 19, a seção 21, o recorte do MVP na seção 4, a seção 22. Também não sobe ao atualizar as seções de estado e registro (15, 16, 17, 18).
+
+A distinção importa na prática. Quase todo documento gerado escreve algo de volta no Blueprint; se cada escrita subisse a versão, gerar o terceiro documento já marcaria os dois primeiros como desatualizados sem que nenhuma decisão tivesse mudado — e a resposta natural a esse ruído é subir a versão de tudo sem conferir, que é exatamente o que torna a verificação inútil.
+
+Toda mudança que sobe a versão ganha uma linha na seção 18.
 
 ## 1. Resumo do Negócio
 1-2 parágrafos: o que é o sistema e para quem, em linguagem simples.
@@ -92,8 +105,15 @@ Riscos técnicos, de segurança ou de dado sensível identificados durante o Con
 Preenchido seguindo `references/blueprint/maturity.md` — checklist qualitativo, não percentual.
 
 ## 16. Pendências
-- **Críticas**: bloqueiam a geração confiável da maioria dos documentos.
-- **Menores**: não bloqueiam, mas devem aparecer marcadas como PENDENTE nos documentos que dependerem delas.
+Sempre neste formato, que é o que `scripts/handoff_check.py` lê:
+```
+**Críticas:**
+- [uma por linha; "Nenhuma." quando não houver]
+
+**Menores:**
+- [uma por linha; "Nenhuma." quando não houver]
+```
+Críticas bloqueiam a geração confiável da maioria dos documentos e o handoff. Menores não bloqueiam, mas aparecem marcadas como PENDENTE nos documentos que dependerem delas.
 
 ## 17. Sugestões Futuras (🔵)
 Ideias que surgiram no Concept mas não foram aceitas nem rejeitadas — fora do escopo atual, mas registradas para não se perder.
@@ -102,7 +122,10 @@ Ideias que surgiram no Concept mas não foram aceitas nem rejeitadas — fora do
 Um log curto de mudanças relevantes pós-consolidação inicial, útil para quando `scripts/find_references.py` apontar algo que precisa de contexto:
 ```
 [data] — BR-04 alterada: profissionais deixaram de poder cancelar reservas próprias; só a secretária pode.
+[data] — Simulação de uso real rodada sobre a v1.2: 2 lacunas corrigidas (criação da conta de secretária, abandono no meio da reserva).
 ```
+
+Registre também cada simulação de uso real (ver `simulation.md`), com a versão sobre a qual ela rodou — é o que permite saber se a versão atual do Blueprint já foi submetida a uma.
 
 ## 19. Aprofundamento por Área
 
@@ -134,6 +157,7 @@ PENDENTE
 
 ### Testes e Qualidade
 PENDENTE
+```
 
 ## 20. Princípios Não-Negociáveis
 Cada princípio recebe ID no formato `PRINC-01`, `PRINC-02`... Regras que valem para o projeto inteiro, sempre, e que nenhum documento gerado — nem nenhuma regra de negócio específica — pode contradizer. Diferente da seção 10 (Regras de Negócio, que descreve comportamento funcional específico) e da seção 14 (Riscos, que sinaliza pontos de atenção a considerar), aqui só entra restrição já decidida como inegociável: se um princípio está registrado aqui e um documento gerado o violaria, isso é uma inconsistência a sinalizar, não uma decisão a tomar.
@@ -162,7 +186,9 @@ Os três itens do meio não são burocracia: são os modos de falha mais comuns 
 **Convenções de commit e branch** — padrão de mensagem, granularidade esperada, nomenclatura de branch. Importa especialmente em implementação autônoma, que gera muitos commits sem revisão humana a cada passo.
 
 Quando qualquer um dos três ainda não foi decidido, mantenha PENDENTE — um agente seguindo uma convenção inventada é pior que um agente perguntando qual usar.
-```
+
+A rotina de fim de tarefa e o protocolo de bug não são decididos aqui: são fixos e entram em todo `CLAUDE.md` (ver `references/documents/claude-md.md`). Esta seção guarda só o que varia de projeto para projeto.
+
 ## 22. Fase Atual
 Um projeto real não acontece de uma vez. Esta seção registra em que ponto ele está, e é o que dá sentido à expressão "desta fase" que aparece no Backlog e no `CLAUDE.md` — sem ela, "implemente as funcionalidades desta fase" não tem referente e o agente decide sozinho o que isso significa.
 
@@ -173,6 +199,10 @@ Um projeto real não acontece de uma vez. Esta seção registra em que ponto ele
 **Fases concluídas:** [histórico curto, com data]
 **Próxima fase (provável):** [o que vem depois, se já se sabe]
 ```
+
+**Quem preenche esta seção.** Na consolidação, ela nasce com "Fase atual: MVP" e os demais campos `PENDENTE`, porque o recorte ainda não existe. Ao gerar o `MVP.md`, o objetivo e as funcionalidades do recorte são escritos aqui junto com a seção 4 (ver `references/documents/mvp.md`). Ao encerrar uma fase, a transição é feita pelo procedimento "Encerrar uma fase" do `SKILL.md`. Sem esses três momentos a seção fica `PENDENTE` para sempre e `scripts/handoff_check.py` bloqueia o handoff.
+
+**"Fase" é só isto.** Neste processo, fase é a fase de produto registrada aqui (MVP, Fase 2...). As subdivisões de construção dentro de uma fase chamam-se **ondas** (ver `references/documents/development-plan.md`). Misturar os dois termos faz "tarefas desta fase" significar coisas diferentes no Backlog e no `CLAUDE.md`.
 
 Enquanto o projeto estiver na primeira fase, "Fase atual" é o MVP e esta seção repete o recorte da seção 4 — o que é aceitável e esperado. Ela passa a ganhar valor quando a primeira fase termina: aí o recorte do MVP vira histórico, e o que o agente deve implementar muda sem que o escopo do projeto mude.
 

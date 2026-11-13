@@ -20,7 +20,7 @@ Os **Owners** da organização podem provisionar skills para todos os membros a 
 3. Decida o padrão: ligada para todos, ou desligada para que cada um ative quando precisar.
 4. Avise a equipe que não há comando: a skill dispara ao reconhecer um pedido de projeto (ver [Guia de uso](guia-de-uso.md)).
 
-No Enterprise, se a varredura de skills estiver ativa, o pacote passa por ela no upload. A Vibe-Docs só contém Markdown e seis scripts Python que leem arquivos `.md` locais. Nenhum deles acessa rede.
+No Enterprise, se a varredura de skills estiver ativa, o pacote passa por ela no upload. A Vibe-Docs só contém Markdown, seis scripts Python que leem arquivos `.md` locais e o módulo que eles compartilham. Nenhum deles acessa rede. A pesquisa de domínio do Concept e a de skills recomendadas usam a busca na web do próprio Claude, quando disponível.
 
 O passo a passo atualizado das telas está na central de ajuda: [Provision and manage skills for your organization](https://support.claude.com/en/articles/12512176-what-are-skills).
 
@@ -31,7 +31,7 @@ Para todos que clonarem um repositório, versione a skill nele:
 ```bash
 mkdir -p .claude/skills
 cp -r /caminho/do/clone/vibe-docs/vibe-docs .claude/skills/
-git add .claude/skills/vibe-docs && git commit -m "Adiciona skill vibe-docs v2.9"
+git add .claude/skills/vibe-docs && git commit -m "Adiciona skill vibe-docs v3.2"
 ```
 
 Fixar a skill no repositório fixa também a versão: todos usam a mesma até alguém atualizar a pasta.
@@ -39,8 +39,9 @@ Fixar a skill no repositório fixa também a versão: todos usam a mesma até al
 ## Escolhendo e atualizando a versão
 
 - Cada release traz as notas extraídas do [CHANGELOG](https://github.com/padilhars/vibe-docs/blob/main/CHANGELOG.md). Leia antes de atualizar: mudanças de comportamento estão descritas com o motivo.
-- **Versão menor** (`v2.9 → v2.10`): ajustes e novos documentos. Blueprints existentes continuam válidos.
-- **Versão maior** (`v2.x → v3.0`): mudança na estrutura do `PROJECT.md`. As notas dizem o que adaptar nos projetos em andamento.
+- **Versão menor** (`v3.2 → v3.3`): ajustes e novos documentos. Blueprints existentes continuam válidos.
+- **Versão maior** (`v3.x → v4.0`): mudança de comportamento ou de estrutura que pede adaptação. As notas dizem o que fazer nos projetos em andamento.
+- **Vindo da v2.x:** o `PROJECT.md` continua válido. Regenere o `CLAUDE.md` dos projetos que já estão em implementação: o gerado antes da v3.2 importa a documentação inteira em toda sessão e não traz a rotina de fim de tarefa, o protocolo de bug nem o `LEARNINGS.md`.
 - Para atualizar no Claude.ai, envie o `.skill` novo pelo mesmo caminho. A versão anterior é substituída.
 - Para acompanhar lançamentos, use **Watch → Custom → Releases** no repositório do GitHub.
 
@@ -58,7 +59,8 @@ Projetos que envolvem dado pessoal (saúde, CPF, endereço) tendem a gerar docum
 ## Política sugerida para a equipe
 
 - **Um Projeto do Claude.ai por sistema**, com o `PROJECT.md` no conhecimento. Assim qualquer pessoa retoma sem reexplicar.
-- **Blueprint versionado junto com o código** quando a implementação começar (pasta `docs/` do repositório).
+- **Documentação versionada junto com o código** quando a implementação começar: `CLAUDE.md` na raiz e o restante em `docs/`.
+- **Skill de terceiros só com revisão.** O `SKILLS-RECOMENDADAS.md` traz origem, licença e o que cada skill acessa; a instalação é decisão de quem responde pelo repositório.
 - **Mudança de decisão passa pela skill**, não por edição direta no código, para que o plano de propagação liste todos os documentos afetados.
 - **`handoff_check.py` como portão** antes de entregar um projeto ao Claude Code.
 

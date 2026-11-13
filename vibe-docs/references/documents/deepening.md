@@ -26,7 +26,8 @@ Quando notar que falta algo pra completar um documento, não presuma que é uma 
 | Backlog | User Stories, Development Plan, Architecture |
 | Test Strategy | Architecture, User Stories (critérios de aceitação), seção 20 do Blueprint |
 | Setup & Runbook | Architecture, Integration Spec, Test Strategy |
-| CLAUDE.md | Praticamente todos os outros já gerados — em especial Setup & Runbook (comandos) e seções 20 e 21 do Blueprint |
+| Skills recomendadas | Architecture (a recomendação depende da stack) |
+| CLAUDE.md | Praticamente todos os outros já gerados — em especial Setup & Runbook (comandos), Test Strategy (comando de verificação) e seções 20, 21 e 22 do Blueprint |
 
 Isso não é uma lista de pré-requisitos obrigatórios — é só onde procurar antes de perguntar. Um documento pode ser gerado sem os outros da lista existirem ainda, desde que o Blueprint sozinho já baste.
 
@@ -36,7 +37,7 @@ Um ou dois fatos pontuais faltando — por exemplo, o Data Model já está quase
 
 - Use o mesmo mecanismo de palpite embutido de `concept/questioning.md`: proponha a resposta mais comum pra esse tipo de decisão, peça confirmação, nunca deixe a pergunta em branco.
 - Pode agrupar até 2-3 lacunas pequenas numa mensagem só, já que é uma rodada rápida e focada, não uma sessão inteira — mas nunca gere o documento na mesma mensagem que faz a pergunta. Espere a resposta antes de gerar.
-- **A resposta é gravada no `PROJECT.md`, não só usada dentro do documento atual e esquecida.** É isso que garante que, da próxima vez que outro documento precisar da mesma informação, ela já esteja disponível sem perguntar de novo. Onde gravar depende da natureza da decisão (ver abaixo).
+- **A resposta é gravada no `PROJECT.md`, não só usada dentro do documento atual e esquecida.** Preencher o que estava `PENDENTE` não sobe a versão do Blueprint (ver "Quando a versão sobe" em `blueprint/schema.md`). É isso que garante que, da próxima vez que outro documento precisar da mesma informação, ela já esteja disponível sem perguntar de novo. Onde gravar depende da natureza da decisão (ver abaixo).
 - Se o usuário responder "não sei", registre como pendência (marcada como PENDENTE) e gere o documento normalmente, com essa parte também marcada como pendência — mesma lógica de `_shared-rules.md` sobre lacunas.
 
 ### Onde gravar cada resposta
@@ -46,6 +47,7 @@ Um ou dois fatos pontuais faltando — por exemplo, o Data Model já está quase
 | Técnica, específica de uma área (Arquitetura, UX/UI, Dados, API, Segurança, NFR, Integrações, Testes e Qualidade) | Seção 19, na subseção da área |
 | Restrição que nunca pode ser violada, em nenhuma circunstância | Seção 20 (Princípios Não-Negociáveis) |
 | Definition of Done, convenção de código, convenção de commit/branch | Seção 21 |
+| Objetivo e funcionalidades da fase atual | Seção 22 (normalmente pelo `MVP.md`) |
 
 As seções 20 e 21 raramente são preenchidas no Concept — normalmente surgem aqui, quando o `CLAUDE.md`, o Test Strategy ou o Setup & Runbook precisam delas. Ambas bloqueiam o handoff se ficarem PENDENTE (ver `scripts/handoff_check.py`), então, ao gerar qualquer um desses três documentos, verifique-as explicitamente em vez de esperar que alguém tenha preenchido antes.
 
